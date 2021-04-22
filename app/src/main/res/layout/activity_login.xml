@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/cvHead"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/kkcouple"
+            android:layout_marginTop="100dp"
+            android:layout_centerInParent="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/evPassword"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="80dp"
+            android:gravity="center"
+            android:hint="愛的密碼"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cvHead"/>
+
+        <ImageView
+            android:id="@+id/ivHeart"
+            android:src="@drawable/heart"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@+id/evPassword"
+            app:layout_constraintEnd_toEndOf="@+id/evPassword"
+            app:layout_constraintTop_toBottomOf="@+id/evPassword"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

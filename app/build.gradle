@@ -1,18 +1,33 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-android-extensions'
 }
 
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+    allprojects {
+        repositories {
+            google()
+            jcenter()
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.nick.wedding"
-        minSdkVersion 16
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,4 +57,50 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //log
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    //SharedPreferences
+    implementation "androidx.preference:preference-ktx:1.1.1"
+
+    //Circle View 圓框圖片
+    implementation "de.hdodenhof:circleimageview:3.1.0"
+
+    //Banner 輪播圖片
+    implementation "com.ms:Banner-androidx:2.3.16"
+    implementation "com.youth.banner:banner:2.1.0"
+    //Banner 文字輪播/跑馬燈
+    implementation "com.superluo:textbannerview:1.0.5"
+
+    //lifecycler
+    kapt "android.arch.lifecycle:compiler:2.2.0-alpha01"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha01"
+
+    // RxJava3 Dependencies
+    implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+
+    // RxPermissions
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'
+
+    //retrofit
+    implementation "com.squareup.retrofit2:retrofit:2.5.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.5.0"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
+
+    //OKhttp
+    implementation "com.squareup.okhttp3:okhttp:3.5.0"
+    implementation("com.squareup.okhttp3:logging-interceptor:4.8.1")
+
+    //RecyclerView
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
+
+    //Navigation
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+
+    // ??? > 65536
+    implementation 'androidx.multidex:multidex:2.0.0'
 }

@@ -2,20 +2,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nick.wedding">
 
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 網路訪問授權 -->
+
     <application
+        android:name=".base.WeddingApplication"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/kklove"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/kklove"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wedding">
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoadingActivity"
+            android:theme="@style/LaunchAndFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".LoginActivity"
+            android:theme="@style/FullScreen">
+        </activity>
+
+        <activity android:name=".MerryMeActivity"
+        android:theme="@style/FullScreen">
+        </activity>
+
     </application>
 
 </manifest>
