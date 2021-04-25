@@ -2,16 +2,15 @@
 <resources>
 
     <style name="LaunchAndFullScreen" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowDisablePreview">true</item>
+<!--        <item name="android:windowIsTranslucent">false</item>-->
+<!--        <item name="android:windowDisablePreview">false</item>-->
+<!--        <item name="android:windowContentOverlay">@null</item>-->
         <item name="android:windowBackground">@drawable/layout_kkcouple</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="FullScreen" parent="Theme.AppCompat.Light.NoActionBar">
-
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
@@ -20,6 +19,11 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="PopupWindowAnimation">
+        <item name="android:windowEnterAnimation">@anim/popup_show</item>
+        <item name="android:windowExitAnimation">@anim/popup_close</item>
     </style>
 
 </resources>
