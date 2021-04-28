@@ -1,25 +1,21 @@
 package com.nick.wedding
 
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.graphics.Rect
+import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.Window
+import android.view.*
 import android.widget.PopupWindow
-import androidx.annotation.ContentView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Constraints
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.demovm.support.textBanner.SpeedyLinearLayoutManager
 import com.nick.wedding.base.BaseActivity
 import com.nick.wedding.base.BaseViewModel
 import com.nick.wedding.databinding.ActivityMerryMeBinding
 import com.nick.wedding.databinding.LayoutPopupwindowBinding
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
 class MerryMeActivity : BaseActivity() {
@@ -31,8 +27,36 @@ class MerryMeActivity : BaseActivity() {
     lateinit var popupWindowBinding: LayoutPopupwindowBinding
     lateinit var popupWindow: PopupWindow
 
+    lateinit var mediaPlayer: MediaPlayer
+
+    var mVolume: Float = 1.0f
+
+    override fun onPause() {
+        mediaPlayer.pause()
+        Timber.tag("hlcDebug").d(" onPause mediaPlayer stop")
+        super.onPause()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!mediaPlayer.isPlaying) {
+            mediaPlayer.start()
+            Timber.tag("hlcDebug").d(" onResume mediaPlayer start")
+        }
+    }
+
+    override fun onBackPressed() {
+        mediaPlayer.pause()
+        super.onBackPressed()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mediaPlayer = MediaPlayer.create(this, R.raw.tokyo_hot_theme_song)
+        mediaPlayer.isLooping = true
+
+//        mediaPlayer.prepare()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_merry_me)
         binding.lifecycleOwner = this
@@ -116,16 +140,38 @@ class MerryMeActivity : BaseActivity() {
                 0,
                 location[1]-statusBarHeight
             )
-            Timber.tag("hlcDebug").d(" location[1]: ${location[1]}")
-            Timber.tag("hlcDebug").d(" statusBarHeight: $statusBarHeight")
-            Timber.tag("hlcDebug").d(" contentViewTop: $contentViewTop")
-
-
-
         }
+
+        popupWindowBinding.smallV.setOnClickListener {
+            mVolume -= 0.1f
+            if (mVolume < 0.1f ) mVolume = 0f
+            mediaPlayer.setVolume(mVolume,mVolume)
+            updateProgress(mVolume)
+        }
+
+        popupWindowBinding.bigV.setOnClickListener {
+            mVolume += 0.1f
+            if (mVolume >= 1f ) mVolume = 1f
+            mediaPlayer.setVolume(mVolume,mVolume)
+            updateProgress(mVolume)
+        }
+
     }
 
+    fun updateProgress(num: Float){
+        Single.just(1)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                popupWindowBinding.progressBar.progress = (num*100).toInt()
+                Timber.tag("hlcDebug").d("progress: $num ${num.toInt()}")
+            },{
+
+            })
+
+    }
     override fun onDestroy() {
+        mediaPlayer.stop()
         super.onDestroy()
     }
 }

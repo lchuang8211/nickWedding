@@ -7,13 +7,47 @@
         android:layout_height="wrap_content">
 
         <View
-            android:background="#30000000"
             android:layout_width="280dp"
             android:layout_height="400dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:background="#30000000"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/smallV"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/decrease"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progress="100"
+            android:id="@+id/progressBar"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_marginTop="53dp"
+            android:layout_marginStart="85dp"
+            android:layout_marginEnd="85dp"
+            android:progressTint="@color/red"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/bigV"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/plus"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
