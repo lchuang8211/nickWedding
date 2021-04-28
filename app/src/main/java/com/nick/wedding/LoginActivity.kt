@@ -3,6 +3,7 @@ package com.nick.wedding
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import com.nick.wedding.base.BaseActivity
@@ -15,7 +16,7 @@ class LoginActivity : BaseActivity() {
     override lateinit var binding : ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        Thread.sleep(2000)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
@@ -46,7 +47,12 @@ class LoginActivity : BaseActivity() {
         }
 
         binding.ivHeart.setOnClickListener {
-            startActivity(Intent(this, MerryMeActivity::class.java))
+            if (binding.evPassword.text.toString() == "大雞雞") {
+                Toast.makeText(this,"這尺寸好..好猛唷! <3",Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, MerryMeActivity::class.java))
+                return@setOnClickListener
+            }
+            Toast.makeText(this,"尺寸不對唷 請輸入\"大雞雞\" <3",Toast.LENGTH_LONG).show()
         }
     }
 }
