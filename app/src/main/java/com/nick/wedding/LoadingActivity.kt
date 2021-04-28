@@ -17,7 +17,8 @@ class LoadingActivity : BaseActivity() {
         Thread.sleep(2000)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading)
-
         startActivity(Intent(this, LoginActivity::class.java))
+
     }
+
 }

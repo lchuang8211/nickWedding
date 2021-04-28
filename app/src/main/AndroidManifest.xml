@@ -13,17 +13,22 @@
         android:roundIcon="@drawable/kklove"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wedding">
-        <activity android:name=".LoadingActivity"
+<!--        <activity android:name=".LoadingActivity"-->
+<!--            android:theme="@style/LaunchAndFullScreen">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+
+        <activity android:name=".LoginActivity"
             android:theme="@style/LaunchAndFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name=".LoginActivity"
-            android:theme="@style/FullScreen">
         </activity>
 
         <activity android:name=".MerryMeActivity"
