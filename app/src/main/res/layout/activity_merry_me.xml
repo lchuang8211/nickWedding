@@ -1,39 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#B0000000">
 
         <ImageView
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/mkk"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mkk_or"
+            android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="90dp"
+            android:background="@drawable/shape_tv"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:text="妮妮專屬or嫁給我吧"
+            android:textColor="@color/black"
+            android:textSize="35dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             />
-        <com.example.demovm.support.textBanner.AutoTextVerticalBannerRecyclerView
-            android:id="@+id/rvBanner"
-            android:layout_marginStart="2dp"
-            android:layout_width="180dp"
-            android:layout_height="140dp"
-            android:layout_marginTop="222dp"
+
+        <!--        <Space-->
+<!--            android:id="@+id/glBot"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="50dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
+
+        <ImageView
+            android:id="@+id/ivWhiteBack"
+            android:layout_width="200dp"
+            android:layout_height="160dp"
+            android:layout_marginTop="200dp"
+            android:background="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/ivSun"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="128dp"
-            android:layout_marginEnd="5dp"
-            android:src="@drawable/sun"
+            android:id="@+id/ivYellowDog"
+            android:layout_width="100dp"
+            android:layout_height="81dp"
+            android:layout_marginTop="125dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_smallpo"
+            android:src="@drawable/small_po"
+            android:paddingEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="2dp"
+            android:text="快來簽到"
+            android:textSize="14dp"
+            android:textColor="@color/red"
+            app:layout_constraintTop_toTopOf="@+id/ivYellowDog"
+            app:layout_constraintBottom_toBottomOf="@+id/ivYellowDog"
+            app:layout_constraintEnd_toEndOf="@+id/ivYellowDog"/>
+
+        <com.nick.wedding.BottomNavLayout
+            android:id="@+id/botNavLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"/>
+
+
+        <com.example.demovm.support.textBanner.AutoTextVerticalBannerRecyclerView
+            android:id="@+id/rvBanner"
+            android:layout_width="180dp"
+            android:layout_height="140dp"
+            android:layout_marginStart="2dp"
+            app:layout_constraintStart_toStartOf="@+id/ivWhiteBack"
+            app:layout_constraintEnd_toEndOf="@+id/ivWhiteBack"
+            app:layout_constraintTop_toTopOf="@+id/ivWhiteBack"
+            app:layout_constraintBottom_toBottomOf="@+id/ivWhiteBack"/>
+
+        <ImageView
+            android:id="@+id/ivSun"
+            android:layout_width="82dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="485dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/dinosaur1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivFly"
+            android:layout_width="82dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="60dp"
+            android:src="@drawable/duck_fight"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

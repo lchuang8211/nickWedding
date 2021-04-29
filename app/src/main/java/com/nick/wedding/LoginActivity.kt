@@ -47,11 +47,11 @@ class LoginActivity : BaseActivity() {
         }
 
         binding.ivHeart.setOnClickListener {
-            if (binding.evPassword.text.toString() == "大雞雞") {
+//            if (binding.evPassword.text.toString() == "大雞雞") {
                 Toast.makeText(this,"這尺寸好..好猛唷! <3",Toast.LENGTH_LONG).show()
                 startActivity(Intent(this, MerryMeActivity::class.java))
                 return@setOnClickListener
-            }
+//            }
             Toast.makeText(this,"尺寸不對唷 請輸入\"大雞雞\" <3",Toast.LENGTH_LONG).show()
         }
     }

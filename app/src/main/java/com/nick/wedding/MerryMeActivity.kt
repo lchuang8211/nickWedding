@@ -1,10 +1,15 @@
 package com.nick.wedding
 
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupWindow
+import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.Constraints
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +22,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class MerryMeActivity : BaseActivity() {
 
@@ -44,6 +50,7 @@ class MerryMeActivity : BaseActivity() {
             mediaPlayer.start()
             Timber.tag("hlcDebug").d(" onResume mediaPlayer start")
         }
+        flyAnimation()
     }
 
     override fun onBackPressed() {
@@ -110,6 +117,8 @@ class MerryMeActivity : BaseActivity() {
         initClick()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("ClickableViewAccessibility")
     private fun initComponent() {
         popupWindowBinding =
             LayoutPopupwindowBinding.inflate(LayoutInflater.from(this), null, false)
@@ -121,19 +130,95 @@ class MerryMeActivity : BaseActivity() {
         )
 //        popupWindow.animationStyle = R.style.PopupWindowAnimation
         popupWindow.isOutsideTouchable = true
+
+        binding.botNavLL.setOnTouchListener { v, event ->
+            when(event.action){
+                MotionEvent.ACTION_DOWN , MotionEvent.ACTION_MOVE -> {
+                    Timber.tag("hlcDebug").d(" ACTION_DOWN ACTION_MOVE: ")
+//                    setAnimation(true)
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_UP ->{
+                    Timber.tag("hlcDebug").d(" ACTION_UP: ")
+//                    setAnimation(false)
+                    return@setOnTouchListener false
+                }
+                else -> {
+                    return@setOnTouchListener false
+                }
+            }
+        }
+
+//        binding.botNavLL.setOnFocusChangeListener { v, hasFocus ->
+//            when(hasFocus) {
+//                true -> {
+//                    setAnimation(true)
+//                    Timber.tag("hlcDebug").d(" hasFocus: true")
+//                }
+//                false -> {
+//                    setAnimation(false)
+//                    Timber.tag("hlcDebug").d(" hasFocus: false")
+//                }
+//            }
+//        }
+
+
+
     }
 
+    private fun flyAnimation(){
+        Single.just(1)
+            .map {
+                binding.ivFly.postOnAnimation {
+                    ObjectAnimator.ofFloat(
+                        binding.ivFly,
+                        "translationX",
+                        *floatArrayOf(-binding.ivFly.width.toFloat()-100f, binding.clBackground.width.toFloat()+100f)
+                    ).apply {
+                        //動畫時間長度
+                        duration = 3000
+                        //開始執行動畫
+                        start()
+                    }
+                }
+                it
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .delay(5000, TimeUnit.MILLISECONDS)
+            .subscribe({
+                Timber.tag("hlcDebug").d(" sleep 3: ")
+                flyAnimation()
+            },{
+
+            })
+//        binding.ivFly.postOnAnimation {
+//            ObjectAnimator.ofFloat(
+//                binding.ivFly,
+//                "translationX",
+//                *floatArrayOf(-binding.ivFly.width.toFloat(), binding.clBackground.width.toFloat())
+//            ).apply {
+//                //動畫時間長度
+//                duration = 3000
+//                //開始執行動畫
+//                start()
+//            }
+//        }
+//        Thread.sleep(3000)
+//        Timber.tag("hlcDebug").d(" sleep: ")
+//        flyAnimation()
+    }
 
     private fun initClick() {
 
-        binding.ivSun.setOnClickListener {
+        binding.ivYellowDog.setOnClickListener {
             val rect = Rect()
             val window = window
             window.decorView.getWindowVisibleDisplayFrame(rect)
             val statusBarHeight = rect.top
             val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).getTop()
             var location = IntArray(2)
-            binding.ivSun.getLocationOnScreen(location)
+            binding.ivYellowDog.getLocationOnScreen(location)
             popupWindow.showAtLocation(
                 binding.clBackground,
                 Gravity.TOP,
