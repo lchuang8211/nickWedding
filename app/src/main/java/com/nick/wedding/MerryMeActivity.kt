@@ -2,12 +2,14 @@ package com.nick.wedding
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.graphics.Rect
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.Constraints
@@ -22,6 +24,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MerryMeActivity : BaseActivity() {
@@ -35,7 +38,7 @@ class MerryMeActivity : BaseActivity() {
 
     lateinit var mediaPlayer: MediaPlayer
 
-    var mVolume: Float = 1.0f
+    var mVolume: Float = 0.7f
 
     override fun onPause() {
         mediaPlayer.pause()
@@ -60,10 +63,8 @@ class MerryMeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mediaPlayer = MediaPlayer.create(this, R.raw.tokyo_hot_theme_song)
+        mediaPlayer = MediaPlayer.create(this, R.raw.wu_bai_till_the_end_of_time_1)
         mediaPlayer.isLooping = true
-
-//        mediaPlayer.prepare()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_merry_me)
         binding.lifecycleOwner = this
@@ -132,13 +133,13 @@ class MerryMeActivity : BaseActivity() {
         popupWindow.isOutsideTouchable = true
 
         binding.botNavLL.setOnTouchListener { v, event ->
-            when(event.action){
-                MotionEvent.ACTION_DOWN , MotionEvent.ACTION_MOVE -> {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                     Timber.tag("hlcDebug").d(" ACTION_DOWN ACTION_MOVE: ")
 //                    setAnimation(true)
                     return@setOnTouchListener true
                 }
-                MotionEvent.ACTION_UP ->{
+                MotionEvent.ACTION_UP -> {
                     Timber.tag("hlcDebug").d(" ACTION_UP: ")
 //                    setAnimation(false)
                     return@setOnTouchListener false
@@ -163,17 +164,19 @@ class MerryMeActivity : BaseActivity() {
 //        }
 
 
-
     }
 
-    private fun flyAnimation(){
+    private fun flyAnimation() {
         Single.just(1)
             .map {
                 binding.ivFly.postOnAnimation {
                     ObjectAnimator.ofFloat(
                         binding.ivFly,
                         "translationX",
-                        *floatArrayOf(-binding.ivFly.width.toFloat()-100f, binding.clBackground.width.toFloat()+100f)
+                        *floatArrayOf(
+                            -binding.ivFly.width.toFloat() - 100f,
+                            binding.clBackground.width.toFloat() + 100f
+                        )
                     ).apply {
                         //動畫時間長度
                         duration = 3000
@@ -189,7 +192,7 @@ class MerryMeActivity : BaseActivity() {
             .subscribe({
                 Timber.tag("hlcDebug").d(" sleep 3: ")
                 flyAnimation()
-            },{
+            }, {
 
             })
 //        binding.ivFly.postOnAnimation {
@@ -207,54 +210,123 @@ class MerryMeActivity : BaseActivity() {
 //        Thread.sleep(3000)
 //        Timber.tag("hlcDebug").d(" sleep: ")
 //        flyAnimation()
+
+//        binding.ivSmallPo.postOnAnimation {
+//            ObjectAnimator.ofFloat(
+//                binding.ivSmallPo,
+//                "translationX",
+//                *floatArrayOf(0f, binding.ivSmallPo.width.toFloat() - binding.tvSmallPo.width.toFloat())
+//            ).apply {
+//                duration = 200
+//                start()
+//            }
+//        }
+
+        popupWindow.setOnDismissListener {
+            Timber.tag("hlcDebug").d(" setOnDismissListener: ")
+            smallPoAnimation(false)
+        }
+
     }
 
+    fun smallPoAnimation(open:Boolean){
+        Timber.tag("hlcDebug").d("smallPoAnimation : $open")
+        binding.ivSmallPo.postOnAnimation {
+            if (open) {
+                ObjectAnimator.ofFloat(
+                    binding.ivSmallPo,
+                    "translationX",
+                    *floatArrayOf(
+                        0f,
+                        binding.ivSmallPo.width.toFloat() - binding.tvSmallPo.width.toFloat()
+                    )
+                ).apply {
+                    duration = 200
+                    start()
+                }
+            }else{
+                ObjectAnimator.ofFloat(
+                    binding.ivSmallPo,
+                    "translationX",
+                    *floatArrayOf(binding.ivSmallPo.width.toFloat() - binding.tvSmallPo.width.toFloat(), 0f)
+                ).apply {
+                    duration = 200
+                    start()
+                }
+            }
+        }
+    }
     private fun initClick() {
 
-        binding.ivYellowDog.setOnClickListener {
+        binding.ivSmallPo.setOnClickListener {
             val rect = Rect()
             val window = window
             window.decorView.getWindowVisibleDisplayFrame(rect)
             val statusBarHeight = rect.top
             val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).getTop()
             var location = IntArray(2)
-            binding.ivYellowDog.getLocationOnScreen(location)
+            binding.ivSmallPo.getLocationOnScreen(location)
             popupWindow.showAtLocation(
                 binding.clBackground,
                 Gravity.TOP,
                 0,
-                location[1]-statusBarHeight
+                location[1] - statusBarHeight
             )
+            smallPoAnimation(true)
         }
 
         popupWindowBinding.smallV.setOnClickListener {
             mVolume -= 0.1f
-            if (mVolume < 0.1f ) mVolume = 0f
-            mediaPlayer.setVolume(mVolume,mVolume)
+            if (mVolume < 0.1f) mVolume = 0f
+            mediaPlayer.setVolume(mVolume, mVolume)
             updateProgress(mVolume)
         }
 
         popupWindowBinding.bigV.setOnClickListener {
             mVolume += 0.1f
-            if (mVolume >= 1f ) mVolume = 1f
-            mediaPlayer.setVolume(mVolume,mVolume)
+            if (mVolume >= 1f) mVolume = 1f
+            mediaPlayer.setVolume(mVolume, mVolume)
             updateProgress(mVolume)
+        }
+
+        popupWindowBinding.btnSignIn.setOnClickListener {
+            signInNow()
+//            popupWindow.dismiss()
         }
 
     }
 
-    fun updateProgress(num: Float){
+    fun signInNow(){
+        var currentTime = Calendar.getInstance()
+        currentTime.get(Calendar.DAY_OF_MONTH)
+        currentTime.get(Calendar.YEAR)
+        currentTime.get(Calendar.MONTH)+1
+
+        val shareKey = "${currentTime.get(Calendar.YEAR)}${currentTime.get(Calendar.MONTH)}${currentTime.get(Calendar.DAY_OF_MONTH)}"
+        val sp = getSharedPreferences("",MODE_PRIVATE)
+        if(sp.getString(shareKey,"")!!.isEmpty()) {
+            sp.edit().putString(shareKey, shareKey).commit()
+            Toast.makeText(this,":+:簽簽簽:+:",Toast.LENGTH_SHORT).show()
+        }
+        else
+            Toast.makeText(this,"今天已經簽過囉~",Toast.LENGTH_SHORT).show()
+
+        Timber.tag("hlcDebug").d("currentTime : ${currentTime.get(Calendar.YEAR)} / ${currentTime.get(Calendar.MONTH)+1} / ${currentTime.get(Calendar.DAY_OF_MONTH)}")
+    }
+
+    fun updateProgress(num: Float) {
         Single.just(1)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                popupWindowBinding.progressBar.progress = (num*100).toInt()
+                popupWindowBinding.progressBar.progress = (num * 100).toInt()
                 Timber.tag("hlcDebug").d("progress: $num ${num.toInt()}")
-            },{
+            }, {
 
             })
 
     }
+
     override fun onDestroy() {
         mediaPlayer.stop()
         super.onDestroy()

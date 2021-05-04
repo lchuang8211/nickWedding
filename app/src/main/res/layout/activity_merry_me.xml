@@ -17,16 +17,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
-
+<!--        android:background="@drawable/shape_tv"-->
         <TextView
             android:layout_width="0dp"
             android:layout_height="90dp"
-            android:background="@drawable/shape_tv"
+
             android:layout_marginTop="20dp"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
             android:text="妮妮專屬or嫁給我吧"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowRadius="15.0"
             android:textSize="35dp"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,12 +48,12 @@
             android:layout_width="200dp"
             android:layout_height="160dp"
             android:layout_marginTop="200dp"
-            android:background="@color/white"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/ivYellowDog"
+            android:id="@+id/ivSmallPo"
             android:layout_width="100dp"
             android:layout_height="81dp"
             android:layout_marginTop="125dp"
@@ -63,18 +65,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:layout_width="20dp"
+            android:id="@+id/tvSmallPo"
+            android:layout_width="25dp"
             android:layout_height="0dp"
-            android:gravity="center"
+            android:gravity="right|center_vertical"
             android:layout_marginTop="1dp"
             android:layout_marginBottom="1dp"
-            android:layout_marginEnd="2dp"
-            android:text="快來簽到"
+            android:orientation="vertical"
+            android:paddingEnd="3dp"
+            android:text="快\n來\n簽\n到"
             android:textSize="14dp"
             android:textColor="@color/red"
-            app:layout_constraintTop_toTopOf="@+id/ivYellowDog"
-            app:layout_constraintBottom_toBottomOf="@+id/ivYellowDog"
-            app:layout_constraintEnd_toEndOf="@+id/ivYellowDog"/>
+            app:layout_constraintTop_toTopOf="@+id/ivSmallPo"
+            app:layout_constraintBottom_toBottomOf="@+id/ivSmallPo"
+            app:layout_constraintEnd_toEndOf="@+id/ivSmallPo"/>
 
         <com.nick.wedding.BottomNavLayout
             android:id="@+id/botNavLL"

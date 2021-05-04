@@ -7,13 +7,103 @@
         android:layout_height="wrap_content">
 
         <View
-            android:layout_width="280dp"
-            android:layout_height="400dp"
-            android:background="#30000000"
+            android:layout_width="300dp"
+            android:layout_height="500dp"
+            android:background="@drawable/shape_popup"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <LinearLayout
+            android:layout_marginTop="30dp"
+            android:id="@+id/topIconll"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="100dp"
+                android:layout_height="140dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/shape_top_icon">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="100dp"
+                android:layout_height="140dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/shape_top_icon">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivDate"
+            android:layout_width="0dp"
+            android:layout_height="210dp"
+            android:background="@drawable/shape_date_calender"
+            android:src="@drawable/date_calender"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topIconll"
+            app:layout_constraintBottom_toTopOf="@+id/btnSignIn"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDate"
+            android:background="#AADEB887"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="@+id/ivDate"
+            app:layout_constraintEnd_toEndOf="@+id/ivDate"
+            app:layout_constraintTop_toTopOf="@+id/ivDate"
+            app:layout_constraintBottom_toBottomOf="@+id/ivDate"
+            />
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_botton_button"
+            android:layout_marginBottom="10dp"
+            android:text="簽到"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:shadowColor="#FF359A"
+            android:shadowRadius="3.0"
+            app:layout_constraintStart_toEndOf="@+id/btnRecord"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <Button
+            android:id="@+id/btnRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_botton_button"
+            android:layout_marginBottom="10dp"
+            android:text="記錄"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:shadowColor="#8F659A"
+            android:shadowRadius="3.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnSignIn"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
 
         <ImageView
             android:id="@+id/smallV"
@@ -23,7 +113,8 @@
             android:layout_marginTop="30dp"
             android:src="@drawable/decrease"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
@@ -37,7 +128,8 @@
             android:progressTint="@color/red"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/bigV"
@@ -47,7 +139,8 @@
             android:layout_marginTop="30dp"
             android:src="@drawable/plus"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
