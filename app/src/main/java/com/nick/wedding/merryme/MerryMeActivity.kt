@@ -154,6 +154,12 @@ class MerryMeActivity : BaseActivity() {
             adpter.submit(androidViewModel.mDate.value!!)
             androidViewModel.changeDate.value = false
         })
+        androidViewModel.signYet.observe(this, androidx.lifecycle.Observer {
+            if (it)
+                Toast.makeText(this,":+:簽簽簽:+:",Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(this,"~~ 簽過囉 ~~",Toast.LENGTH_SHORT).show()
+        })
 
     }
 
@@ -170,8 +176,6 @@ class MerryMeActivity : BaseActivity() {
         )
 //        popupWindow.animationStyle = R.style.PopupWindowAnimation
         popupWindow.isOutsideTouchable = true
-
-
 
         binding.botNavLL.setOnTouchListener { v, event ->
             when (event.action) {
@@ -190,20 +194,6 @@ class MerryMeActivity : BaseActivity() {
                 }
             }
         }
-
-//        binding.botNavLL.setOnFocusChangeListener { v, hasFocus ->
-//            when(hasFocus) {
-//                true -> {
-//                    setAnimation(true)
-//                    Timber.tag("hlcDebug").d(" hasFocus: true")
-//                }
-//                false -> {
-//                    setAnimation(false)
-//                    Timber.tag("hlcDebug").d(" hasFocus: false")
-//                }
-//            }
-//        }
-
 
     }
 
@@ -269,7 +259,9 @@ class MerryMeActivity : BaseActivity() {
     private fun initClick() {
 
         binding.ivSmallPo.setOnClickListener {
-            androidViewModel.setDate()
+//            androidViewModel.setDate()
+
+            androidViewModel.getHoldMonth()
             val rect = Rect()
             val window = window
             window.decorView.getWindowVisibleDisplayFrame(rect)
@@ -318,20 +310,8 @@ class MerryMeActivity : BaseActivity() {
         currentTime.get(Calendar.YEAR)
         currentTime.get(Calendar.MONTH)+1
 
-//        val shareKey = "${currentTime.get(Calendar.YEAR)}${currentTime.get(Calendar.MONTH)}${currentTime.get(Calendar.DAY_OF_MONTH)}"
-//        val sp = getSharedPreferences("",MODE_PRIVATE)
-//        if(sp.getString(shareKey,"")!!.isEmpty()) {
-//            sp.edit().putString(shareKey, shareKey).commit()
-
-            Toast.makeText(this,":+:簽簽簽:+:",Toast.LENGTH_SHORT).show()
-
-
-//            Toast.makeText(this,"今天已經簽過囉~",Toast.LENGTH_SHORT).show()
-
         androidViewModel.signToday()
 
-
-        Timber.tag("hlcDebug").d("currentTime : ${currentTime.get(Calendar.YEAR)} / ${currentTime.get(Calendar.MONTH)+1} / ${currentTime.get(Calendar.DAY_OF_MONTH)}")
     }
 
     fun updateProgress(num: Float) {
@@ -340,7 +320,7 @@ class MerryMeActivity : BaseActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 popupWindowBinding.progressBar.progress = (num * 100).toInt()
-                Timber.tag("hlcDebug").d("progress: $num ${num.toInt()}")
+//                Timber.tag("hlcDebug").d("progress: $num ${num.toInt()}")
             }, {
 
             })

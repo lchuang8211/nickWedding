@@ -2,23 +2,26 @@ package com.nick.wedding.merryme
 
 import android.app.Application
 import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.nick.wedding.base.BaseViewModel
 import com.nick.wedding.data.DateSign
 import com.nick.wedding.database.WeddingOpenHelper
-import com.nick.wedding.surpport.DatePictureHelper
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MerryMeViewModel(application: Application) : AndroidViewModel(application) {
 
-    val stringData = MutableLiveData<String>("LiveData")
     val changeDate = MutableLiveData<Boolean>(false)
-    val mDate = MutableLiveData<List<DateSign>>()
+    val signYet = MutableLiveData<Boolean>(false)
+    val mDate = MutableLiveData<MutableList<DateSign>>()
+    val initDateList = mutableListOf<DateSign>()
+    val sqlHelper = WeddingOpenHelper(application)
+    val selectSql = sqlHelper.readableDatabase
+    val dateTable = "dateTable"
+    val tableDate = "date"
     val calendarTime = Calendar.getInstance()
+
     var cDay: Int = 1
     var cYear: Int = 2021
     var cMonth: Int = 1
@@ -30,69 +33,111 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     init {
         cDay = calendarTime.get(Calendar.DAY_OF_MONTH)
         cYear = calendarTime.get(Calendar.YEAR)
-        cMonth = calendarTime.get(Calendar.MONTH)+1
+        cMonth = calendarTime.get(Calendar.MONTH) + 1
         cWMonth = calendarTime.get(Calendar.WEEK_OF_MONTH)
         cDWeek = calendarTime.get(Calendar.DAY_OF_WEEK)
         today = dateFormat.format(calendarTime.time)
         Timber.tag("hlcDebug").d(" today: $today")
     }
 
-    /** 讀取舊資料 */
-    fun initDate(){
-
+    /** 取得當月天數(有算閏年) */
+    fun getDays(year: Int, month: Int): Int = when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        else -> if (((year % 100 == 0) && year % 400 == 0) || ((year % 100 != 0) && year % 4 == 0)) 29
+                else 28
     }
 
-    fun setDate(){
-        val list = mutableListOf<DateSign>()
-        for (i in 0..30){
-            list.add(DateSign( year = 2021, month = 5, week = i%7, date = i+1, picture = DatePictureHelper.DataChoice.values()[i].value, signed = ( (i+1)<cDay) ) )
+    /** 讀取舊資料 */
+    fun getHoldMonth(year: Int = cYear, month: Int = cMonth){
+        initDateList.clear()
+
+        val nowCl = Calendar.getInstance()
+        nowCl.time = dateFormat.parse("$year-$month-1")!!
+        var nullWeek = nowCl.get(Calendar.DAY_OF_WEEK)-1
+
+        val cursor = selectSql.rawQuery("select * from $dateTable where $tableDate like '$year-${month.toString().padStart(2, '0')}%' order by $tableDate ASC", null)
+        cursor.moveToFirst()
+        for (i in 0..getDays(year, month)-1) {
+            if (cursor.count > 0 && cursor.position < cursor.count) {
+                val year = cursor.getString(cursor.getColumnIndex("date")).split("-")[0].toInt()
+                val month = cursor.getString(cursor.getColumnIndex("date")).split("-")[1].toInt()
+                val day = cursor.getString(cursor.getColumnIndex("date")).split("-")[2].toInt()
+                if(i+1 == day) {
+                    val nowCl = Calendar.getInstance()
+                    val date = dateFormat.parse(cursor.getString(cursor.getColumnIndex("date")))
+                    nowCl.time = date!!
+                    val dWeek = nowCl.get(Calendar.DAY_OF_WEEK)-1
+                    Timber.tag("hlcDebug")
+                        .d("cursor : ${cursor.getString(cursor.getColumnIndex("date"))} / ${cursor.getInt(cursor.getColumnIndex("sign"))}")
+                    initDateList.add(
+                        DateSign(
+                            year = year,
+                            month = month,
+                            date = day,
+                            week = dWeek,
+                            picture = 0,
+                            signed = cursor.getInt(cursor.getColumnIndex("sign")) == 1
+                        )
+                    )
+
+                    cursor.moveToNext()
+                } else {
+                    initDateList.add(
+                        DateSign(
+                            year = -1,
+                            month = -1,
+                            date = i+1,
+                            week = -1,
+                            picture = -1,
+                            signed = false
+                        )
+                    )
+                }
+            } else {
+                initDateList.add(
+                    DateSign(
+                        year = -1,
+                        month = -1,
+                        date = i+1,
+                        week = nullWeek%7,
+                        picture = -1,
+                        signed = false
+                    )
+                )
+                nullWeek += 1
+            }
         }
-        mDate.value = list
+        Timber.tag("hlcDebug").d("initDateList : $initDateList")
+        mDate.value = initDateList
         changeDate.value = true
     }
 
-    val sqlHelper = WeddingOpenHelper(application)
-
-
     /** 今日簽到 */
-    fun signToday(){
+    fun signToday() {
 
         /**
          * 1. 搜尋 DB
          * 2. 插入 DB
          * */
-        val selectSql = sqlHelper.readableDatabase
-        val writeSql = sqlHelper.writableDatabase
-        val value = ContentValues()
-        val dateTable = "dateTable"
-        value.put("date", today)
-        value.put("sign", false)
-
-        writeSql.insertOrThrow(dateTable,null, value)
-
-        val cursor = selectSql.rawQuery("select * from $dateTable", null)
-        Timber.tag("hlcDebug").d(" cursor count: ${cursor.count}")
-        if(cursor != null) {
-            cursor.moveToFirst()
-            for (i in 0..cursor.count-1) {
-                Timber.tag("hlcDebug").d(" i: $i")
-                Timber.tag("hlcDebug")
-                    .d("cursor : ${cursor.getString(cursor.getColumnIndex("date"))} / ${cursor.getInt(cursor.getColumnIndex("sign"))}")
-                cursor.moveToNext()
-            }
-            cursor.close()
-        } else
-            Timber.tag("hlcDebug").d(" selectSql is null")
 
         //SELECT * FROM dateTable
-        for (i in mDate.value!!.toList().indices){
 
-            if (mDate.value!![i].year ==  calendarTime.get(Calendar.YEAR) && mDate.value!![i].month ==  calendarTime.get(Calendar.MONTH)+1 && mDate.value!![i].date == calendarTime.get(Calendar.DAY_OF_MONTH)) {
-                mDate.value!![i].signed = true
-                Timber.tag("hlcDebug").d("date : ${mDate.value!![i].date}")
-                changeDate.value = true
+        selectSql.rawQuery("select sign from $dateTable where $tableDate =?", arrayOf("$today"))?.let {
+            if(it.count == 0) {
+                val writeSql = sqlHelper.writableDatabase
+                val value = ContentValues()
+                value.put("date", "$today")
+                value.put("sign", true)
+                writeSql.insertOrThrow(dateTable,null, value)
+                getHoldMonth(cYear, cMonth)
+                signYet.value = true
+            } else {
+                signYet.value = false
             }
+
         }
 
     }
+
 }

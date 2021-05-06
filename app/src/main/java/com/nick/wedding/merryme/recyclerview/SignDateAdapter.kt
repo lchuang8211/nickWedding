@@ -9,6 +9,7 @@ import com.nick.wedding.R
 import com.nick.wedding.data.DateSign
 import com.nick.wedding.databinding.ItemCalendarDateBinding
 import com.nick.wedding.merryme.MerryMeViewModel
+import com.nick.wedding.surpport.DatePictureHelper
 import kotlinx.android.synthetic.main.item_calendar_date.view.*
 import okhttp3.internal.concurrent.Task
 import timber.log.Timber
@@ -34,7 +35,6 @@ class SignDateAdapter(val viewModel: MerryMeViewModel): RecyclerView.Adapter<myH
 
     fun submit(data: List<DateSign>){
         this.data = data
-        Timber.tag("hlcDebug").d(" size : ${data.size}")
         notifyDataSetChanged()
     }
 }
@@ -42,9 +42,12 @@ class SignDateAdapter(val viewModel: MerryMeViewModel): RecyclerView.Adapter<myH
 class myHolder(val binding: ItemCalendarDateBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: DateSign){
-        Timber.tag("hlcDebug").d(" item : ${item.signed}")
+
         binding.item = item
-        binding.ivCaledarDate.setImageResource(item.picture)
+
+        if (item.date > 0)
+            binding.ivCaledarDate.setImageResource(DatePictureHelper.DataChoice.values()[item.date-1].value)
+
         if (item.signed)
             binding.ivSignOK.visibility = View.VISIBLE
         else

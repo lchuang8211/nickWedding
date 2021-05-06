@@ -14,10 +14,9 @@ class WeddingOpenHelper(context: Context) : SQLiteOpenHelper(context, name, Curs
     }
 
     val dateTable = "dateTable"
-    val _id = "_id"
     val date = "date"
     val sign = "sign"
-    val table_date_sql = "CREATE TABLE if not exists $dateTable( $_id integer PRIMARY KEY AUTOINCREMENT, $date TEXT NOT NULL , $sign BLOB NOT NULL )"
+    val table_date_sql = "CREATE TABLE if not exists $dateTable($date TEXT PRIMARY KEY NOT NULL, $sign BLOB NOT NULL)"
 
     //建置資料庫的前置動作
     override fun onCreate(db: SQLiteDatabase?) {
