@@ -60,11 +60,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDate"
-            android:background="#AADEB887"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="33dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="15dp"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="@+id/ivDate"

@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import com.nick.wedding.base.BaseActivity
 import com.nick.wedding.databinding.ActivityLoginBinding
+import com.nick.wedding.merryme.MerryMeActivity
 
 class LoginActivity : BaseActivity() {
 

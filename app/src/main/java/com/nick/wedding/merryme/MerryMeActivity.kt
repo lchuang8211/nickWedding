@@ -1,28 +1,39 @@
-package com.nick.wedding
+package com.nick.wedding.merryme
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
 import android.graphics.Rect
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.Constraints
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.internal.bind.DateTypeAdapter
+import com.nick.wedding.AutoText
+import com.nick.wedding.R
 import com.nick.wedding.base.BaseActivity
 import com.nick.wedding.base.BaseViewModel
 import com.nick.wedding.databinding.ActivityMerryMeBinding
 import com.nick.wedding.databinding.LayoutPopupwindowBinding
+import com.nick.wedding.merryme.recyclerview.SignDateAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Flowable.interval
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.internal.wait
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -30,6 +41,8 @@ import java.util.concurrent.TimeUnit
 class MerryMeActivity : BaseActivity() {
 
     override lateinit var viewModel: BaseViewModel
+
+    lateinit var androidViewModel : MerryMeViewModel
 
     override lateinit var binding: ActivityMerryMeBinding
 
@@ -61,12 +74,20 @@ class MerryMeActivity : BaseActivity() {
         super.onBackPressed()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mediaPlayer = MediaPlayer.create(this, R.raw.wu_bai_till_the_end_of_time_1)
+
+        androidViewModel = ViewModelProvider(this).get(MerryMeViewModel::class.java)
+
+        mediaPlayer = MediaPlayer.create(this,
+            R.raw.wu_bai_till_the_end_of_time_1
+        )
         mediaPlayer.isLooping = true
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_merry_me)
+        binding = DataBindingUtil.setContentView(this,
+            R.layout.activity_merry_me
+        )
         binding.lifecycleOwner = this
 
         binding.rvBanner.adapter = AutoText().apply {
@@ -116,6 +137,24 @@ class MerryMeActivity : BaseActivity() {
 
         initComponent()
         initClick()
+        initObserver()
+    }
+
+    private fun initObserver() {
+        androidViewModel.changeDate.observe(this, androidx.lifecycle.Observer {
+            if (it == false)
+                return@Observer
+
+            val adpter = SignDateAdapter(androidViewModel)
+            popupWindowBinding.rvDate.apply {
+                this.adapter = adpter
+                this.layoutManager = GridLayoutManager(context,7)
+            }
+
+            adpter.submit(androidViewModel.mDate.value!!)
+            androidViewModel.changeDate.value = false
+        })
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -131,6 +170,8 @@ class MerryMeActivity : BaseActivity() {
         )
 //        popupWindow.animationStyle = R.style.PopupWindowAnimation
         popupWindow.isOutsideTouchable = true
+
+
 
         binding.botNavLL.setOnTouchListener { v, event ->
             when (event.action) {
@@ -167,65 +208,34 @@ class MerryMeActivity : BaseActivity() {
     }
 
     private fun flyAnimation() {
-        Single.just(1)
-            .map {
-                binding.ivFly.postOnAnimation {
-                    ObjectAnimator.ofFloat(
+
+        Observable.interval(5500, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    binding.ivFly.visibility = View.VISIBLE
+                    val anim = AnimatorSet()
+                    val one = ObjectAnimator.ofFloat(
                         binding.ivFly,
                         "translationX",
                         *floatArrayOf(
-                            -binding.ivFly.width.toFloat() - 100f,
-                            binding.clBackground.width.toFloat() + 100f
+                            -binding.ivFly.width.toFloat(),
+                            binding.clBackground.width.toFloat()
                         )
-                    ).apply {
-                        //動畫時間長度
-                        duration = 3000
-                        //開始執行動畫
-                        start()
-                    }
-                }
-                it
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .delay(5000, TimeUnit.MILLISECONDS)
-            .subscribe({
-                Timber.tag("hlcDebug").d(" sleep 3: ")
-                flyAnimation()
-            }, {
-
-            })
-//        binding.ivFly.postOnAnimation {
-//            ObjectAnimator.ofFloat(
-//                binding.ivFly,
-//                "translationX",
-//                *floatArrayOf(-binding.ivFly.width.toFloat(), binding.clBackground.width.toFloat())
-//            ).apply {
-//                //動畫時間長度
-//                duration = 3000
-//                //開始執行動畫
-//                start()
-//            }
-//        }
-//        Thread.sleep(3000)
-//        Timber.tag("hlcDebug").d(" sleep: ")
-//        flyAnimation()
-
-//        binding.ivSmallPo.postOnAnimation {
-//            ObjectAnimator.ofFloat(
-//                binding.ivSmallPo,
-//                "translationX",
-//                *floatArrayOf(0f, binding.ivSmallPo.width.toFloat() - binding.tvSmallPo.width.toFloat())
-//            ).apply {
-//                duration = 200
-//                start()
-//            }
-//        }
-
-        popupWindow.setOnDismissListener {
-            Timber.tag("hlcDebug").d(" setOnDismissListener: ")
-            smallPoAnimation(false)
-        }
+                    )
+                    val two = ObjectAnimator.ofFloat(
+                        binding.ivFly,
+                        "translationY",
+                        *floatArrayOf( 0f, -20f, 20f, -20f, 20f, 0f)
+                    )
+                    anim.play(one).with(two)
+                    anim.duration = 5000
+                    anim.interpolator = LinearInterpolator()
+                    anim.start()
+                },
+                {}
+            )
 
     }
 
@@ -259,6 +269,7 @@ class MerryMeActivity : BaseActivity() {
     private fun initClick() {
 
         binding.ivSmallPo.setOnClickListener {
+            androidViewModel.setDate()
             val rect = Rect()
             val window = window
             window.decorView.getWindowVisibleDisplayFrame(rect)
@@ -294,6 +305,11 @@ class MerryMeActivity : BaseActivity() {
 //            popupWindow.dismiss()
         }
 
+        popupWindow.setOnDismissListener {
+            Timber.tag("hlcDebug").d(" setOnDismissListener: ")
+            smallPoAnimation(false)
+        }
+
     }
 
     fun signInNow(){
@@ -302,14 +318,18 @@ class MerryMeActivity : BaseActivity() {
         currentTime.get(Calendar.YEAR)
         currentTime.get(Calendar.MONTH)+1
 
-        val shareKey = "${currentTime.get(Calendar.YEAR)}${currentTime.get(Calendar.MONTH)}${currentTime.get(Calendar.DAY_OF_MONTH)}"
-        val sp = getSharedPreferences("",MODE_PRIVATE)
-        if(sp.getString(shareKey,"")!!.isEmpty()) {
-            sp.edit().putString(shareKey, shareKey).commit()
+//        val shareKey = "${currentTime.get(Calendar.YEAR)}${currentTime.get(Calendar.MONTH)}${currentTime.get(Calendar.DAY_OF_MONTH)}"
+//        val sp = getSharedPreferences("",MODE_PRIVATE)
+//        if(sp.getString(shareKey,"")!!.isEmpty()) {
+//            sp.edit().putString(shareKey, shareKey).commit()
+
             Toast.makeText(this,":+:簽簽簽:+:",Toast.LENGTH_SHORT).show()
-        }
-        else
-            Toast.makeText(this,"今天已經簽過囉~",Toast.LENGTH_SHORT).show()
+
+
+//            Toast.makeText(this,"今天已經簽過囉~",Toast.LENGTH_SHORT).show()
+
+        androidViewModel.signToday()
+
 
         Timber.tag("hlcDebug").d("currentTime : ${currentTime.get(Calendar.YEAR)} / ${currentTime.get(Calendar.MONTH)+1} / ${currentTime.get(Calendar.DAY_OF_MONTH)}")
     }

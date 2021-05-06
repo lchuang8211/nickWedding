@@ -117,6 +117,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginBottom="60dp"
             android:src="@drawable/duck_fight"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 

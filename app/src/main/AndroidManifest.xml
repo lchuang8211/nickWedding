@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MerryMeActivity"
+        <activity android:name=".merryme.MerryMeActivity"
         android:theme="@style/FullScreen">
         </activity>
 
