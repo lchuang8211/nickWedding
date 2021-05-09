@@ -12,14 +12,18 @@ import java.util.*
 
 class MerryMeViewModel(application: Application) : AndroidViewModel(application) {
 
+    var totalDate = 0
+    var totalCookie = 0
+
     val changeDate = MutableLiveData<Boolean>(false)
-    val signYet = MutableLiveData<Boolean>(false)
-    val mDate = MutableLiveData<MutableList<DateSign>>()
+    val signYet = MutableLiveData<Int>(0)
+    val exchangeClick = MutableLiveData<Boolean>(false)
     val initDateList = mutableListOf<DateSign>()
     val sqlHelper = WeddingOpenHelper(application)
     val selectSql = sqlHelper.readableDatabase
     val dateTable = "dateTable"
     val tableDate = "date"
+    val sign = "sign"
     val calendarTime = Calendar.getInstance()
 
     var cDay: Int = 1
@@ -38,6 +42,38 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
         cDWeek = calendarTime.get(Calendar.DAY_OF_WEEK)
         today = dateFormat.format(calendarTime.time)
         Timber.tag("hlcDebug").d(" today: $today")
+        selectSign()
+        selectDate()
+    }
+
+    val _exchangeList = mutableListOf<String>()
+    val exchangeList = MutableLiveData<List<String>>(_exchangeList)
+    var exchangePage = 1
+
+    fun getExchangePage(page:Int = 1){
+        _exchangeList.clear()
+        this.exchangePage = page
+
+        when(page){
+            1 -> {
+                _exchangeList.add("a")
+                _exchangeList.add("b")
+                _exchangeList.add("c")
+                _exchangeList.add("d")
+            }
+            2 -> {
+                _exchangeList.add("a")
+                _exchangeList.add("b")
+                _exchangeList.add("c")
+            }
+            3 -> {
+                _exchangeList.add("a")
+                _exchangeList.add("b")
+            }
+        }
+
+        exchangeList.value = _exchangeList
+
     }
 
     /** 取得當月天數(有算閏年) */
@@ -48,14 +84,27 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 else 28
     }
 
+    fun scrollOut(){
+        changeDate.value = true
+    }
+
     /** 讀取舊資料 */
-    fun getHoldMonth(year: Int = cYear, month: Int = cMonth){
+    fun getHoldMonth(year: Int = cYear, month: Int = cMonth) : List<DateSign> {
         initDateList.clear()
 
         val nowCl = Calendar.getInstance()
         nowCl.time = dateFormat.parse("$year-$month-1")!!
         var nullWeek = nowCl.get(Calendar.DAY_OF_WEEK)-1
-
+        for (i in 0..nullWeek-1) {
+            initDateList.add(DateSign(
+                year = -1,
+                month = -1,
+                date = -1,
+                week = -1,
+                picture = -1,
+                signed = false
+            ))
+        }
         val cursor = selectSql.rawQuery("select * from $dateTable where $tableDate like '$year-${month.toString().padStart(2, '0')}%' order by $tableDate ASC", null)
         cursor.moveToFirst()
         for (i in 0..getDays(year, month)-1) {
@@ -109,8 +158,10 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         Timber.tag("hlcDebug").d("initDateList : $initDateList")
-        mDate.value = initDateList
-        changeDate.value = true
+//        mDate.value = initDateList
+//        changeDate.value = true
+
+        return initDateList
     }
 
     /** 今日簽到 */
@@ -128,16 +179,40 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 val writeSql = sqlHelper.writableDatabase
                 val value = ContentValues()
                 value.put("date", "$today")
-                value.put("sign", true)
+                value.put("sign", 1)
                 writeSql.insertOrThrow(dateTable,null, value)
                 getHoldMonth(cYear, cMonth)
-                signYet.value = true
-            } else {
-                signYet.value = false
-            }
-
+                selectSign()
+                selectDate()
+                changeDate.value = true
+                signYet.value = 1
+            } else
+                signYet.value = -1
         }
 
+    }
+
+    fun selectSign(){
+        selectSql.rawQuery("select $sign from $dateTable where $sign = 1 ", null)?.let {
+            Timber.tag("hlcDebug").d("總 sign : ${it.count}")
+            totalCookie = it.count
+        }
+    }
+
+    fun selectCurrentSign(year:Int, month:Int): Int{
+        var tempCookie = 0
+        selectSql.rawQuery("select * from dateTable where date like '$year-${month.toString().padStart(2, '0')}%' and sign != 0 ", null)?.let {
+            Timber.tag("hlcDebug").d("總 sign : ${it.count}")
+            tempCookie = it.count
+        }
+        return tempCookie
+    }
+
+    fun selectDate(){
+        selectSql.rawQuery("select $tableDate from $dateTable", null)?.let {
+            Timber.tag("hlcDebug").d("總 date : ${it.count}")
+            totalDate = it.count
+        }
     }
 
 }

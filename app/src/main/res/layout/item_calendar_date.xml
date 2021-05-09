@@ -13,11 +13,10 @@
 
         <ImageView
             android:id="@+id/ivCaledarDate"
-            android:src="@drawable/date_fourteen"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginStart="7dp"
-            android:layout_marginTop="7dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -28,12 +27,15 @@
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:layout_marginStart="7dp"
-            android:layout_marginTop="7dp"
-            android:src="#33333333"
+            android:layout_marginTop="4dp"
+            android:paddingStart="10dp"
+            android:paddingTop="9dp"
+            android:src="@drawable/icon_popo_coockie"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

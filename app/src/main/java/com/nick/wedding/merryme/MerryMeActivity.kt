@@ -27,6 +27,9 @@ import com.nick.wedding.base.BaseActivity
 import com.nick.wedding.base.BaseViewModel
 import com.nick.wedding.databinding.ActivityMerryMeBinding
 import com.nick.wedding.databinding.LayoutPopupwindowBinding
+import com.nick.wedding.databinding.LayoutPopupwindowExchangeBinding
+import com.nick.wedding.merryme.recyclerview.ExchangeAdapter
+import com.nick.wedding.merryme.recyclerview.OutSignDateAdapter
 import com.nick.wedding.merryme.recyclerview.SignDateAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable.interval
@@ -49,8 +52,12 @@ class MerryMeActivity : BaseActivity() {
     lateinit var popupWindowBinding: LayoutPopupwindowBinding
     lateinit var popupWindow: PopupWindow
 
+    lateinit var popupWindowExchangeBinding: LayoutPopupwindowExchangeBinding
+    lateinit var popupWindowExchange: PopupWindow
+
     lateinit var mediaPlayer: MediaPlayer
 
+    var lHeight = 0
     var mVolume: Float = 0.7f
 
     override fun onPause() {
@@ -141,30 +148,76 @@ class MerryMeActivity : BaseActivity() {
     }
 
     private fun initObserver() {
+        androidViewModel.exchangeClick.observe(this, androidx.lifecycle.Observer {
+            if (it){ // 打開兌換
+                popupWindowBinding.rvItemOut.visibility = View.GONE
+                popupWindowBinding.btnExchange.visibility = View.GONE
+                popupWindowBinding.btnSignIn.visibility = View.GONE
+
+                popupWindowBinding.layoutExchange.root.visibility = View.VISIBLE
+            }else{
+                popupWindowBinding.rvItemOut.visibility = View.VISIBLE
+                popupWindowBinding.btnExchange.visibility = View.VISIBLE
+                popupWindowBinding.btnSignIn.visibility = View.VISIBLE
+
+                popupWindowBinding.layoutExchange.root.visibility = View.GONE
+            }
+        })
+
+        androidViewModel.exchangeList.observe(this, androidx.lifecycle.Observer {
+
+            val adapter = ExchangeAdapter(androidViewModel)
+            popupWindowBinding.layoutExchange.rvExchange.let {
+                it.adapter = adapter
+                it.layoutManager = LinearLayoutManager(this)
+            }
+
+            adapter.submit(it, androidViewModel.exchangePage)
+        })
+
         androidViewModel.changeDate.observe(this, androidx.lifecycle.Observer {
             if (it == false)
                 return@Observer
 
-            val adpter = SignDateAdapter(androidViewModel)
-            popupWindowBinding.rvDate.apply {
-                this.adapter = adpter
-                this.layoutManager = GridLayoutManager(context,7)
-            }
+            val currentTime = Calendar.getInstance()
+            val yBefore = Calendar.getInstance()
+            yBefore.set(2021,Calendar.JANUARY,1)
+            val monthSize = (currentTime.get(Calendar.YEAR) - yBefore.get(Calendar.YEAR))*12 + (currentTime.get(Calendar.MONTH) - yBefore.get(Calendar.MONTH) +1)
+//            Timber.tag("hlcDebug").d("array size : ${(currentTime.get(Calendar.YEAR) - yBefore.get(Calendar.YEAR))*12 + (currentTime.get(Calendar.MONTH) - yBefore.get(Calendar.MONTH) +1)}")
 
-            adpter.submit(androidViewModel.mDate.value!!)
+            var list = mutableListOf<Pair<Int, Int>>()
+            var range = 0
+            for (i in 1..monthSize){
+                if (i%12==0) range+=1
+                list.add(Pair(2021+range, i%12))
+            }
+            Timber.tag("hlcDebug").d("list : $list")
+
+            val adpter = OutSignDateAdapter(androidViewModel)
+            popupWindowBinding.rvItemOut.apply {
+                this.adapter = adpter
+                this.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL, false)
+            }
+            adpter.submit(list)
+            popupWindowBinding.rvItemOut.scrollToPosition(list.size-1)
+
+            popupWindowBinding.tvCookieCount.text = "累計 ${androidViewModel.totalCookie.toString()} 個"
+            popupWindowBinding.tvDateCount.text = "簽到 ${androidViewModel.totalDate.toString()} 天"
+
             androidViewModel.changeDate.value = false
         })
+
         androidViewModel.signYet.observe(this, androidx.lifecycle.Observer {
-            if (it)
-                Toast.makeText(this,":+:簽簽簽:+:",Toast.LENGTH_SHORT).show()
-            else
-                Toast.makeText(this,"~~ 簽過囉 ~~",Toast.LENGTH_SHORT).show()
+            if (it>0)
+                Toast.makeText(this, ":+:簽簽簽:+:", Toast.LENGTH_SHORT).show()
+            else if (it == -1)
+                Toast.makeText(this, "~~ 簽過囉 ~~", Toast.LENGTH_SHORT).show()
         })
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("ClickableViewAccessibility")
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    @SuppressLint("ClickableViewAccessibility")
     private fun initComponent() {
         popupWindowBinding =
             LayoutPopupwindowBinding.inflate(LayoutInflater.from(this), null, false)
@@ -177,23 +230,33 @@ class MerryMeActivity : BaseActivity() {
 //        popupWindow.animationStyle = R.style.PopupWindowAnimation
         popupWindow.isOutsideTouchable = true
 
-        binding.botNavLL.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                    Timber.tag("hlcDebug").d(" ACTION_DOWN ACTION_MOVE: ")
-//                    setAnimation(true)
-                    return@setOnTouchListener true
-                }
-                MotionEvent.ACTION_UP -> {
-                    Timber.tag("hlcDebug").d(" ACTION_UP: ")
-//                    setAnimation(false)
-                    return@setOnTouchListener false
-                }
-                else -> {
-                    return@setOnTouchListener false
-                }
-            }
-        }
+    popupWindowExchangeBinding =
+        LayoutPopupwindowExchangeBinding.inflate(LayoutInflater.from(this), null, false)
+    popupWindowExchange = PopupWindow(
+        popupWindowExchangeBinding.root,
+        Constraints.LayoutParams.WRAP_CONTENT,
+        Constraints.LayoutParams.WRAP_CONTENT,
+        true
+    )
+    popupWindowExchange.isOutsideTouchable = true
+
+//        binding.botNavLL.setOnTouchListener { v, event ->
+//            when (event.action) {
+//                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+//                    Timber.tag("hlcDebug").d(" ACTION_DOWN ACTION_MOVE: ")
+////                    setAnimation(true)
+//                    return@setOnTouchListener true
+//                }
+//                MotionEvent.ACTION_UP -> {
+//                    Timber.tag("hlcDebug").d(" ACTION_UP: ")
+////                    setAnimation(false)
+//                    return@setOnTouchListener false
+//                }
+//                else -> {
+//                    return@setOnTouchListener false
+//                }
+//            }
+//        }
 
     }
 
@@ -224,7 +287,9 @@ class MerryMeActivity : BaseActivity() {
                     anim.interpolator = LinearInterpolator()
                     anim.start()
                 },
-                {}
+                {
+
+                }
             )
 
     }
@@ -261,7 +326,8 @@ class MerryMeActivity : BaseActivity() {
         binding.ivSmallPo.setOnClickListener {
 //            androidViewModel.setDate()
 
-            androidViewModel.getHoldMonth()
+            androidViewModel.scrollOut()
+
             val rect = Rect()
             val window = window
             window.decorView.getWindowVisibleDisplayFrame(rect)
@@ -293,42 +359,58 @@ class MerryMeActivity : BaseActivity() {
         }
 
         popupWindowBinding.btnSignIn.setOnClickListener {
-            signInNow()
-//            popupWindow.dismiss()
+            androidViewModel.signToday()
         }
 
+        popupWindowBinding.btnExchange.setOnClickListener {
+            popupWindowBinding.viewBackground.layoutParams.height += 200
+            androidViewModel.getExchangePage()
+            androidViewModel.exchangeClick.value = true
+        }
+
+        popupWindowBinding.layoutExchange.btnClose.setOnClickListener {
+            popupWindowBinding.viewBackground.layoutParams.height -= 200
+            androidViewModel.exchangeClick.value = false
+        }
+
+        popupWindowBinding.layoutExchange.btnChoice.setOnClickListener {
+            popupWindowBinding.viewBackground.layoutParams.height -= 200
+            androidViewModel.exchangeClick.value = false
+        }
+
+        popupWindowBinding.layoutExchange.clTagButtonOne.setOnClickListener {
+            androidViewModel.getExchangePage(1)
+        }
+
+        popupWindowBinding.layoutExchange.clTagButtonTwo.setOnClickListener {
+            androidViewModel.getExchangePage(2)
+        }
+
+        popupWindowBinding.layoutExchange.clTagButtonThree.setOnClickListener {
+            androidViewModel.getExchangePage(3)
+        }
+
+
+
         popupWindow.setOnDismissListener {
-            Timber.tag("hlcDebug").d(" setOnDismissListener: ")
             smallPoAnimation(false)
         }
 
     }
 
-    fun signInNow(){
-        var currentTime = Calendar.getInstance()
-        currentTime.get(Calendar.DAY_OF_MONTH)
-        currentTime.get(Calendar.YEAR)
-        currentTime.get(Calendar.MONTH)+1
-
-        androidViewModel.signToday()
-
-    }
-
     fun updateProgress(num: Float) {
-        Single.just(1)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                popupWindowBinding.progressBar.progress = (num * 100).toInt()
-//                Timber.tag("hlcDebug").d("progress: $num ${num.toInt()}")
-            }, {
-
-            })
-
+//        Single.just(1)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                popupWindowBinding.progressBar.progress = (num * 100).toInt()
+////                Timber.tag("hlcDebug").d("progress: $num ${num.toInt()}")
+//            }, {
+//
+//            })
     }
 
     override fun onDestroy() {
-        mediaPlayer.stop()
         super.onDestroy()
     }
 }

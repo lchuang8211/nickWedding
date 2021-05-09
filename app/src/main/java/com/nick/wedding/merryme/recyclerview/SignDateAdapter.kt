@@ -30,7 +30,7 @@ class SignDateAdapter(val viewModel: MerryMeViewModel): RecyclerView.Adapter<myH
     override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holder: myHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(data[position], viewModel)
     }
 
     fun submit(data: List<DateSign>){
@@ -41,12 +41,16 @@ class SignDateAdapter(val viewModel: MerryMeViewModel): RecyclerView.Adapter<myH
 
 class myHolder(val binding: ItemCalendarDateBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: DateSign){
+    fun bind(item: DateSign, viewModel: MerryMeViewModel){
 
         binding.item = item
 
         if (item.date > 0)
             binding.ivCaledarDate.setImageResource(DatePictureHelper.DataChoice.values()[item.date-1].value)
+        else {
+            binding.ivCaledarDate.visibility = View.GONE
+            binding.ivSignOK.visibility = View.GONE
+        }
 
         if (item.signed)
             binding.ivSignOK.visibility = View.VISIBLE
