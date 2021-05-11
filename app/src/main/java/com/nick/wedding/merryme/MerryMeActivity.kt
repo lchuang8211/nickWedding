@@ -41,7 +41,7 @@ import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class MerryMeActivity : BaseActivity() {
+class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
 
     override lateinit var viewModel: BaseViewModel
 
@@ -170,6 +170,7 @@ class MerryMeActivity : BaseActivity() {
             popupWindowBinding.layoutExchange.rvExchange.let {
                 it.adapter = adapter
                 it.layoutManager = LinearLayoutManager(this)
+                adapter.setListener(this)
             }
 
             adapter.submit(it, androidViewModel.exchangePage)
@@ -239,6 +240,7 @@ class MerryMeActivity : BaseActivity() {
         true
     )
     popupWindowExchange.isOutsideTouchable = true
+
 
 //        binding.botNavLL.setOnTouchListener { v, event ->
 //            when (event.action) {
@@ -412,5 +414,12 @@ class MerryMeActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    override fun onFuctionListener(title: String, price: Int) {
+
+        Timber.tag("hlcDebug").d(" exchange : $title - $price")
+        Toast.makeText(this,"兌換 $title 花費 $price 個",Toast.LENGTH_SHORT).show()
+
     }
 }

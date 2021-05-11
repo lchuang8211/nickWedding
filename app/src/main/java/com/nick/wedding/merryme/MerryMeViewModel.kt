@@ -5,6 +5,7 @@ import android.content.ContentValues
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.nick.wedding.data.DateSign
+import com.nick.wedding.data.ExchangeItem
 import com.nick.wedding.database.WeddingOpenHelper
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -50,25 +51,43 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val exchangeList = MutableLiveData<List<String>>(_exchangeList)
     var exchangePage = 1
 
+    val _exchangeItem = mutableListOf<ExchangeItem>()
+    val exchangeItem = MutableLiveData<List<ExchangeItem>>(_exchangeItem)
+
     fun getExchangePage(page:Int = 1){
         _exchangeList.clear()
         this.exchangePage = page
 
+        // search db
+
+        // insert db
+
         when(page){
             1 -> {
-                _exchangeList.add("a")
-                _exchangeList.add("b")
-                _exchangeList.add("c")
-                _exchangeList.add("d")
+                _exchangeList.add("item_1")
+                _exchangeList.add("item_2")
+                _exchangeList.add("item_3")
+                _exchangeList.add("item_4")
+                _exchangeList.add("item_5")
+                _exchangeList.add("item_6")
+                _exchangeList.add("item_7")
             }
             2 -> {
-                _exchangeList.add("a")
-                _exchangeList.add("b")
-                _exchangeList.add("c")
+                _exchangeList.add("item_1")
+                _exchangeList.add("item_2")
+                _exchangeList.add("item_3")
+                _exchangeList.add("item_4")
+                _exchangeList.add("item_5")
+                _exchangeList.add("item_6")
+                _exchangeList.add("item_7")
             }
             3 -> {
-                _exchangeList.add("a")
-                _exchangeList.add("b")
+                _exchangeList.add("item_1")
+                _exchangeList.add("item_2")
+                _exchangeList.add("item_3")
+                _exchangeList.add("item_4")
+                _exchangeList.add("item_5")
+                _exchangeList.add("item_6")
             }
         }
 
