@@ -11,7 +11,7 @@ class WeddingOpenHelper(context: Context) : SQLiteOpenHelper(context, name, Curs
     companion object {
         val name = "kkLove.db"
         val CursorFactory = null
-        val version = 2
+        val version = 3
     }
 
     val dateTable = "dateTable"
@@ -27,10 +27,14 @@ class WeddingOpenHelper(context: Context) : SQLiteOpenHelper(context, name, Curs
     val visibility = "visibility"
     private val table_exchange_sql = "CREATE TABLE  if not exists $exchangeTable ( $category TEXT NOT NULL, $title TEXT NOT NULL, $price INTEGER NOT NULL, $seq INTEGER NOT NULL, $visibility INTEGER NOT NULL, PRIMARY KEY($category,$seq) )"
 
+    val exchangeRecordTable = "exchangeRecordTable"
+    private val table_exchange_record_sql ="CREATE TABLE  if not exists $exchangeRecordTable ( $seq INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, $date TEXT NOT NULL, $title TEXT NOT NULL, $price INTEGER NOT NULL) "
+    
     //建置資料庫的前置動作
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(table_date_sql)
         db?.execSQL(table_exchange_sql)
+        db?.execSQL(table_exchange_record_sql)
     }
 
     //刪除及更新表格動作
@@ -38,6 +42,7 @@ class WeddingOpenHelper(context: Context) : SQLiteOpenHelper(context, name, Curs
         Timber.tag("hlcDebug").d(" Version: $oldVersion -> $newVersion")
         db?.execSQL(table_date_sql)
         db?.execSQL(table_exchange_sql)
+        db?.execSQL(table_exchange_record_sql)
         onCreate(db)
     }
 }
