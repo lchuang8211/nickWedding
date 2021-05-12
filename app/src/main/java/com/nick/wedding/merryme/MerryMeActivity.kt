@@ -2,6 +2,7 @@ package com.nick.wedding.merryme
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.graphics.Rect
 import android.media.MediaPlayer
 import android.os.Build
@@ -26,6 +27,7 @@ import com.nick.wedding.databinding.LayoutPopupwindowExchangeCheckBinding
 import com.nick.wedding.merryme.recyclerview.ExchangeAdapter
 import com.nick.wedding.merryme.recyclerview.ExchangeRecordAdapter
 import com.nick.wedding.merryme.recyclerview.OutSignDateAdapter
+import com.nick.wedding.picture.PictureActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -318,6 +320,10 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
                 location[1] - statusBarHeight
             )
             smallPoAnimation(true)
+        }
+
+        binding.ivDinosaur.setOnClickListener {
+            startActivity(Intent(this, PictureActivity::class.java))
         }
 
         /** 月曆區 popupwindow */

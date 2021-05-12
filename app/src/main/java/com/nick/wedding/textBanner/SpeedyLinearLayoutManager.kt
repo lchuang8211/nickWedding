@@ -18,7 +18,7 @@ class SpeedyLinearLayoutManager : LinearLayoutManager {
          * 原生系統 default is 25f (bigger = slower)
          * 目前自訂 1000f
          * */
-        private const val MILLISECONDS_PER_INCH = 1000f //default is 25f (bigger = slower)
+        private const val MILLISECONDS_PER_INCH = 100f //default is 25f (bigger = slower)
     }
 
     constructor(context: Context?) : super(context) {}

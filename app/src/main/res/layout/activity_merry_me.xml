@@ -101,7 +101,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/ivWhiteBack"/>
 
         <ImageView
-            android:id="@+id/ivSun"
+            android:id="@+id/ivDinosaur"
             android:layout_width="82dp"
             android:layout_height="70dp"
             android:layout_marginTop="485dp"
