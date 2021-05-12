@@ -5,7 +5,7 @@ import android.content.ContentValues
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.nick.wedding.data.DateSign
-import com.nick.wedding.data.ExchangeItem
+import com.nick.wedding.data.ExchangeRecord
 import com.nick.wedding.database.WeddingOpenHelper
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -22,9 +22,12 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val initDateList = mutableListOf<DateSign>()
     val sqlHelper = WeddingOpenHelper(application)
     val selectSql = sqlHelper.readableDatabase
+    val writeSql = sqlHelper.writableDatabase
     val dateTable = "dateTable"
+    val exchangeRecordTable = "exchangeRecordTable"
     val tableDate = "date"
     val sign = "sign"
+    val seq = "seq"
     val calendarTime = Calendar.getInstance()
 
     var cDay: Int = 1
@@ -51,8 +54,12 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val exchangeList = MutableLiveData<List<String>>(_exchangeList)
     var exchangePage = 1
 
-    val _exchangeItem = mutableListOf<ExchangeItem>()
-    val exchangeItem = MutableLiveData<List<ExchangeItem>>(_exchangeItem)
+    var exchangeItemTitle = ""
+    var exchangePrice = 0
+    val exchangeSuccess = MutableLiveData<Boolean>(null)
+
+    val _exchangeRecordList = mutableListOf<ExchangeRecord>()
+    val exchangeRecordList = MutableLiveData<List<ExchangeRecord>>(_exchangeRecordList)
 
     fun getExchangePage(page:Int = 1){
         _exchangeList.clear()
@@ -195,7 +202,6 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
 
         selectSql.rawQuery("select sign from $dateTable where $tableDate =?", arrayOf("$today"))?.let {
             if(it.count == 0) {
-                val writeSql = sqlHelper.writableDatabase
                 val value = ContentValues()
                 value.put("date", "$today")
                 value.put("sign", 1)
@@ -215,6 +221,8 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
         selectSql.rawQuery("select $sign from $dateTable where $sign = 1 ", null)?.let {
             Timber.tag("hlcDebug").d("總 sign : ${it.count}")
             totalCookie = it.count
+
+            totalCookie = 200
         }
     }
 
@@ -231,6 +239,45 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
         selectSql.rawQuery("select $tableDate from $dateTable", null)?.let {
             Timber.tag("hlcDebug").d("總 date : ${it.count}")
             totalDate = it.count
+        }
+    }
+
+    fun checkCookie(){
+        /** 判斷是否 持有量 > 消費金額 */
+        if (totalCookie > exchangePrice) {
+            exchangeSuccess.value = true
+            val value = ContentValues()
+            value.put("date", today)
+            value.put("title", exchangeItemTitle)
+            value.put("price", exchangePrice?:0)
+            writeSql.insertOrThrow(exchangeRecordTable,null, value)
+            totalCookie -= exchangePrice
+        } else {
+            exchangeSuccess.value = false
+        }
+        changeDate.value = true
+
+    }
+
+    fun getExchangeRecord(){
+        _exchangeRecordList.clear()
+        selectSql.rawQuery("select * from exchangeRecordTable order by $seq", null).let {
+            if(it.count>0){
+                it.moveToFirst()
+                for (i in 0 until it.count) {
+                    _exchangeRecordList.add(
+                        ExchangeRecord(
+                            seq = it.getString(it.getColumnIndex("seq")).toInt(),
+                            date = it.getString(it.getColumnIndex("date")),
+                            title = it.getString(it.getColumnIndex("title")),
+                            price = it.getString(it.getColumnIndex("price")).toInt()
+                        )
+                    )
+                    it.moveToNext()
+                }
+                Timber.tag("hlcDebug").d("_exchangeRecordList : $_exchangeRecordList")
+                exchangeRecordList.value = _exchangeRecordList
+            }
         }
     }
 
