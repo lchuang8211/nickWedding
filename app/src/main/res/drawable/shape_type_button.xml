@@ -2,7 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="#6FB7B7" />
+    <solid android:color="#84C1FF" />
+<!--    #CC99CC-->
+<!--    #84C1FF-->
 <!--    // FFBAE5-->
 <!--    //FFE4E1-->
 <!--    //ffe4e1-->

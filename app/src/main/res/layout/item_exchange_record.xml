@@ -2,43 +2,88 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
         android:padding="5dp">
 
         <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
+            android:id="@+id/tvSeq"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:layout_weight="2"
             android:gravity="center_vertical"
-            android:paddingStart="5sp"
-            android:text="546321"
+            android:paddingStart="8sp"
+            android:text="66."
             android:textColor="@color/cornflower_blue"
-            android:textSize="14dp" />
+            android:textSize="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:paddingStart="5sp"
+            android:text="2021-66-66"
+            android:textColor="@color/cornflower_blue"
+            android:textSize="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvSeq"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:paddingStart="10sp"
+            android:text="喔喔喔咿咿咿"
+            android:textColor="@color/cornflower_blue"
+            android:textSize="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvDate"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:paddingStart="10sp"
+            android:text="花費"
+            android:textColor="@color/cornflower_blue"
+            android:textSize="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivCookie"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/ivCookie"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:padding="5dp"
-            android:src="@drawable/icon_popo_coockie" />
+            android:padding="7dp"
+            android:src="@drawable/icon_popo_coockie"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvPrice"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvPrice"
-            android:layout_width="match_parent"
+            android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_weight="4"
-            android:background="@color/burlyWood"
             android:gravity="center_vertical|end"
-            android:paddingEnd="5dp"
-            android:text="546321"
+            android:layout_marginEnd="8dp"
+            android:text="333個"
             android:textColor="@color/cornflower_blue"
-            android:textSize="14dp" />
+            android:textSize="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

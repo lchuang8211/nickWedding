@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:layout="http://schemas.android.com/tools">
+    xmlns:layout="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/outCLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/shape_popup_stroke"
+
         android:padding="2dp">
+<!--        android:background="@drawable/shape_popup_stroke"-->
 
         <View
             android:id="@+id/viewBackground"
-            android:layout_width="320dp"
-            android:layout_height="180dp"
-            android:background="@drawable/shape_popup"
+            android:layout_width="280dp"
+            android:layout_height="150dp"
+            android:background="@drawable/shape_popup_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,13 +39,12 @@
                 android:layout_height="60dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                android:background="@drawable/shape_botton_button">
+                android:background="@drawable/shape_white_button">
 
                 <ImageView
                     android:id="@+id/ivCookieicon"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginStart="25dp"
                     android:background="@drawable/shape_icon_background"
                     android:padding="4dp"
                     android:src="@drawable/icon_popo_coockie"
@@ -53,14 +54,15 @@
 
                 <TextView
                     android:id="@+id/tvSpendTitle"
-                    android:layout_width="180dp"
+                    android:layout_width="160dp"
                     android:layout_height="30dp"
-                    android:layout_marginStart="15dp"
-                    android:text="要兌換＊＊＊嗎？"
+                    android:layout_marginStart="8dp"
                     android:gravity="center"
                     android:shadowColor="#9F454A"
                     android:shadowRadius="3.0"
+                    android:text="要兌換＊＊＊＊＊嗎？"
                     android:textColor="@color/black"
+
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -69,11 +71,11 @@
                     android:id="@+id/tvSpendValues"
                     android:layout_width="50dp"
                     android:layout_height="30dp"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="8dp"
                     android:gravity="center"
-                    android:text="**個"
                     android:shadowColor="#9F454A"
                     android:shadowRadius="3.0"
+                    android:text="**個"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -83,19 +85,50 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/llExchangeRecord"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:background="@drawable/shape_exchange_title"
+                android:shadowColor="#9F454A"
+                android:shadowRadius="3.0"
+                android:gravity="center"
+                android:text="兌換記錄" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvExchangeRecord"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnBack"
             android:layout_width="100dp"
             android:layout_height="50dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/shape_botton_button"
-            android:shadowColor="#8F659A"
-            android:shadowRadius="3.0"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/shape_type_button"
             android:text="返回"
-            android:textColor="@color/black"
             android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowRadius="3.0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnConfirm"
             app:layout_constraintStart_toStartOf="parent" />
@@ -104,7 +137,8 @@
             android:id="@+id/btnConfirm"
             android:layout_width="100dp"
             android:layout_height="50dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/shape_botton_button"
             android:shadowColor="#8F659A"
             android:shadowRadius="3.0"
