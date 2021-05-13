@@ -2,6 +2,7 @@ package com.nick.wedding.base
 
 import android.app.Application
 import com.nick.wedding.BuildConfig
+import com.nick.wedding.surpport.WuBaiMediaPlayer
 import timber.log.Timber
 
 class WeddingApplication : Application() {
@@ -13,7 +14,7 @@ class WeddingApplication : Application() {
         if (BuildConfig.DEBUG)
             Timber.plant(Timber.DebugTree())
 
-
+        WuBaiMediaPlayer.setMediaPlayerContext(applicationContext)
     }
 
 

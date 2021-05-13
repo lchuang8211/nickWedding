@@ -28,6 +28,7 @@ import com.nick.wedding.merryme.recyclerview.ExchangeAdapter
 import com.nick.wedding.merryme.recyclerview.ExchangeRecordAdapter
 import com.nick.wedding.merryme.recyclerview.OutSignDateAdapter
 import com.nick.wedding.picture.PictureActivity
+import com.nick.wedding.surpport.WuBaiMediaPlayer
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -61,24 +62,16 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
     var exchangePrice = 0
 
     override fun onPause() {
-        mediaPlayer.pause()
-        Timber.tag("hlcDebug").d(" onPause mediaPlayer stop")
+        WuBaiMediaPlayer.stopMediaPlayer()
         super.onPause()
 
     }
 
     override fun onResume() {
         super.onResume()
-        if (!mediaPlayer.isPlaying) {
-            mediaPlayer.start()
-            Timber.tag("hlcDebug").d(" onResume mediaPlayer start")
-        }
+        WuBaiMediaPlayer.startMediaPlayer()
+        Timber.tag("hlcDebug").d(" onResume mediaPlayer start")
         flyAnimation()
-    }
-
-    override fun onBackPressed() {
-        mediaPlayer.pause()
-        super.onBackPressed()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -87,10 +80,7 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
 
         androidViewModel = ViewModelProvider(this).get(MerryMeViewModel::class.java)
 
-        mediaPlayer = MediaPlayer.create(this,
-            R.raw.wu_bai_till_the_end_of_time_1
-        )
-        mediaPlayer.isLooping = true
+        WuBaiMediaPlayer.startMediaPlayer()
 
         binding = DataBindingUtil.setContentView(this,
             R.layout.activity_merry_me
@@ -213,8 +203,6 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
 
     }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    @SuppressLint("ClickableViewAccessibility")
     private fun initComponent() {
         popupWindowBinding =
             LayoutPopupwindowBinding.inflate(LayoutInflater.from(this), null, false)
@@ -302,7 +290,6 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
     private fun initClick() {
 
         binding.ivSmallPo.setOnClickListener {
-//            androidViewModel.setDate()
 
             androidViewModel.scrollOut()
 
@@ -431,4 +418,5 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         popupWindowExchangeBinding.tvSpendTitle.text = "要兌換${title}嗎？"
         popupWindowExchangeBinding.tvSpendValues.text = "${price}個"
     }
+
 }

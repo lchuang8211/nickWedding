@@ -16,6 +16,8 @@ import com.nick.wedding.base.BaseViewModel
 import com.nick.wedding.databinding.ActivityPictureBinding
 import com.nick.wedding.picture.adapter.AutoPicture
 import com.nick.wedding.picture.adapter.PictureAdapter
+import com.nick.wedding.surpport.WuBaiMediaPlayer
+import timber.log.Timber
 
 class PictureActivity : BaseActivity() {
 
@@ -29,6 +31,7 @@ class PictureActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WuBaiMediaPlayer.startMediaPlayer()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_picture)
         androidViewModel = ViewModelProvider(this).get(PictureViewModel::class.java)
 
@@ -57,4 +60,15 @@ class PictureActivity : BaseActivity() {
         StartSnapHelper().attachToRecyclerView(binding.autoPicture)
         binding.autoPicture.start()
     }
+
+    override fun onPause() {
+        WuBaiMediaPlayer.stopMediaPlayer()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        WuBaiMediaPlayer.startMediaPlayer()
+    }
+
 }
