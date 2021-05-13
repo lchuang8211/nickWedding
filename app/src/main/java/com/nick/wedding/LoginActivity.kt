@@ -4,17 +4,24 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
 import com.nick.wedding.base.BaseActivity
 import com.nick.wedding.databinding.ActivityLoginBinding
 import com.nick.wedding.merryme.MerryMeActivity
+import timber.log.Timber
 
 class LoginActivity : BaseActivity() {
 
     override lateinit var viewModel: MainViewModel
 
     override lateinit var binding : ActivityLoginBinding
+
+    lateinit var biometricManager : BiometricManager
+    lateinit var biometricPrompt : BiometricPrompt.PromptInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Thread.sleep(2000)
@@ -25,12 +32,48 @@ class LoginActivity : BaseActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         binding.lifecycleOwner = this
 
+
+
         initComponent()
         initObserver()
     }
 
     private fun initObserver() {
+        biometricManager = BiometricManager.from(this)
 
+        when (biometricManager.canAuthenticate()) {
+            BiometricManager.BIOMETRIC_SUCCESS ->
+                Timber.tag("hlcDebug").d(" BIOMETRIC_SUCCESS: 可以使用")
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
+                Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_NO_HARDWARE: 硬體不支持此功能")
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
+                Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_HW_UNAVAILABLE: 目前無法使用")
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+                Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_NONE_ENROLLED: 沒有設置")
+        }
+
+        biometricPrompt = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("給我妳的小手手")
+            .setNegativeButtonText("取消")
+            .build()
+
+        BiometricPrompt(this, ContextCompat.getMainExecutor(this),object : BiometricPrompt.AuthenticationCallback(){
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Timber.tag("hlcDebug").d(" Error: ")
+            }
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                Timber.tag("hlcDebug").d(" Succeeded: ")
+                gogogo()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Timber.tag("hlcDebug").d(" Failed: ")
+            }
+        }).authenticate(biometricPrompt)
     }
 
     private fun initComponent() {
@@ -48,12 +91,14 @@ class LoginActivity : BaseActivity() {
         }
 
         binding.ivHeart.setOnClickListener {
-//            if (binding.evPassword.text.toString() == "大雞雞") {
-                Toast.makeText(this,"這尺寸好..好猛唷! <3",Toast.LENGTH_LONG).show()
                 startActivity(Intent(this, MerryMeActivity::class.java))
                 return@setOnClickListener
-//            }
-            Toast.makeText(this,"尺寸不對唷 請輸入\"大雞雞\" <3",Toast.LENGTH_LONG).show()
         }
+
+
+    }
+
+    fun gogogo(){
+        startActivity(Intent(this, MerryMeActivity::class.java))
     }
 }
