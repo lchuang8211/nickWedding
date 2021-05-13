@@ -41,9 +41,16 @@ class LoginActivity : BaseActivity() {
     private fun initObserver() {
         biometricManager = BiometricManager.from(this)
 
+        biometricPrompt = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("給我妳的小手手")
+            .setNegativeButtonText("取消")
+            .build()
+
         when (biometricManager.canAuthenticate()) {
-            BiometricManager.BIOMETRIC_SUCCESS ->
+            BiometricManager.BIOMETRIC_SUCCESS -> {
                 Timber.tag("hlcDebug").d(" BIOMETRIC_SUCCESS: 可以使用")
+                useBiometricPrompt()
+            }
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
                 Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_NO_HARDWARE: 硬體不支持此功能")
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
@@ -52,28 +59,7 @@ class LoginActivity : BaseActivity() {
                 Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_NONE_ENROLLED: 沒有設置")
         }
 
-        biometricPrompt = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("給我妳的小手手")
-            .setNegativeButtonText("取消")
-            .build()
 
-        BiometricPrompt(this, ContextCompat.getMainExecutor(this),object : BiometricPrompt.AuthenticationCallback(){
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Timber.tag("hlcDebug").d(" Error: ")
-            }
-
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                Timber.tag("hlcDebug").d(" Succeeded: ")
-                gogogo()
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Timber.tag("hlcDebug").d(" Failed: ")
-            }
-        }).authenticate(biometricPrompt)
     }
 
     private fun initComponent() {
@@ -96,6 +82,26 @@ class LoginActivity : BaseActivity() {
         }
 
 
+    }
+
+    fun useBiometricPrompt(){
+        BiometricPrompt(this, ContextCompat.getMainExecutor(this),object : BiometricPrompt.AuthenticationCallback(){
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Timber.tag("hlcDebug").d(" Error: ")
+            }
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                Timber.tag("hlcDebug").d(" Succeeded: ")
+                gogogo()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Timber.tag("hlcDebug").d(" Failed: ")
+            }
+        }).authenticate(biometricPrompt)
     }
 
     fun gogogo(){
