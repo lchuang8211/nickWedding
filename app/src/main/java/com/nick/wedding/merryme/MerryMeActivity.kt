@@ -32,7 +32,6 @@ import com.nick.wedding.surpport.WuBaiMediaPlayer
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.selects.select
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -51,7 +50,8 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
     lateinit var popupWindowExchangeBinding: LayoutPopupwindowExchangeCheckBinding
     lateinit var popupWindowExchange: PopupWindow
 
-    lateinit var mediaPlayer: MediaPlayer
+    val duckAnimation = Observable.interval(5500, TimeUnit.MILLISECONDS)
+    val animator = AnimatorSet()
 
     var popHeight = 0
 
@@ -61,16 +61,19 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
     var exchangeItemTitle = ""
     var exchangePrice = 0
 
+    var totalWidth = 0f
+
     override fun onPause() {
         WuBaiMediaPlayer.stopMediaPlayer()
+        animator.pause()
+        duckAnimation?.unsubscribeOn(AndroidSchedulers.mainThread())
         super.onPause()
-
     }
 
     override fun onResume() {
         super.onResume()
         WuBaiMediaPlayer.startMediaPlayer()
-        Timber.tag("hlcDebug").d(" onResume mediaPlayer start")
+        animator.resume()
         flyAnimation()
     }
 
@@ -108,7 +111,7 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         binding.rvBanner.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         binding.rvBanner.start(0)
 
-        initComponent()
+        initPopupWindow()
         initClick()
         initObserver()
     }
@@ -201,9 +204,15 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
             }
         })
 
+        /** 監聽 View 的 layout 變動 (在初始化之前都是尚未繪製完成的狀態，即 width, heigh = 0) */
+        binding.clBackground.viewTreeObserver.addOnGlobalLayoutListener {
+            totalWidth = binding.clBackground.width.toFloat() + binding.ivFly.width.toFloat()
+            setAnim()
+            flyAnimation()
+        }
     }
 
-    private fun initComponent() {
+    private fun initPopupWindow() {
         popupWindowBinding =
             LayoutPopupwindowBinding.inflate(LayoutInflater.from(this), null, false)
         popupWindow = PopupWindow(
@@ -226,38 +235,34 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         popupWindowExchange.isOutsideTouchable = false
     }
 
-    private fun flyAnimation() {
+    fun setAnim() {
+        val one = ObjectAnimator.ofFloat(
+            binding.ivFly,
+            "translationX",
+            *floatArrayOf(0f, totalWidth) //-currentX
+        )
+        val two = ObjectAnimator.ofFloat(
+            binding.ivFly,
+            "translationY",
+            *floatArrayOf(0f, -20f, 20f, -20f, 20f, 0f)
+        )
+        animator.play(one).with(two)
+        animator.duration = 5000
+        animator.interpolator = LinearInterpolator()
+    }
 
-        Observable.interval(5500, TimeUnit.MILLISECONDS)
+    private fun flyAnimation() {
+        duckAnimation
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    binding.ivFly.visibility = View.VISIBLE
-                    val anim = AnimatorSet()
-                    val one = ObjectAnimator.ofFloat(
-                        binding.ivFly,
-                        "translationX",
-                        *floatArrayOf(
-                            -binding.ivFly.width.toFloat(),
-                            binding.clBackground.width.toFloat()
-                        )
-                    )
-                    val two = ObjectAnimator.ofFloat(
-                        binding.ivFly,
-                        "translationY",
-                        *floatArrayOf( 0f, -20f, 20f, -20f, 20f, 0f)
-                    )
-                    anim.play(one).with(two)
-                    anim.duration = 5000
-                    anim.interpolator = LinearInterpolator()
-                    anim.start()
+                    animator.start()
                 },
                 {
-
+                    Timber.tag("hlcDebug").d(" throwable: $it")
                 }
             )
-
     }
 
     fun smallPoAnimation(open:Boolean){

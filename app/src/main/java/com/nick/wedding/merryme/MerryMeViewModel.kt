@@ -219,9 +219,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
 
     fun selectSign(){
         selectSql.rawQuery("select $sign from $dateTable where $sign = 1 ", null)?.let {
-            Timber.tag("hlcDebug").d("總 sign : ${it.count}")
             totalCookie = it.count
-
             totalCookie = 200
         }
     }
@@ -229,7 +227,6 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     fun selectCurrentSign(year:Int, month:Int): Int{
         var tempCookie = 0
         selectSql.rawQuery("select * from dateTable where date like '$year-${month.toString().padStart(2, '0')}%' and sign != 0 ", null)?.let {
-            Timber.tag("hlcDebug").d("總 sign : ${it.count}")
             tempCookie = it.count
         }
         return tempCookie
@@ -237,7 +234,6 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
 
     fun selectDate(){
         selectSql.rawQuery("select $tableDate from $dateTable", null)?.let {
-            Timber.tag("hlcDebug").d("總 date : ${it.count}")
             totalDate = it.count
         }
     }
