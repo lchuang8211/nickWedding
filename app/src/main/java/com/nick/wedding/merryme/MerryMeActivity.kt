@@ -83,11 +83,10 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
 
         androidViewModel = ViewModelProvider(this).get(MerryMeViewModel::class.java)
 
-        WuBaiMediaPlayer.startMediaPlayer()
-
         binding = DataBindingUtil.setContentView(this,
             R.layout.activity_merry_me
         )
+
         binding.lifecycleOwner = this
 
         binding.rvBanner.adapter = AutoText().apply {

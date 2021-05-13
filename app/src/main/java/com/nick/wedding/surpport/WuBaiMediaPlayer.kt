@@ -13,8 +13,10 @@ object WuBaiMediaPlayer {
     fun setMediaPlayerContext(context: Context) {
         this.application = context
         mediaPlayer = MediaPlayer.create(application, R.raw.wu_bai_till_the_end_of_time_1)
+        mediaPlayer.isLooping = true
     }
 
+    /** @param Int R.raw.id */
     fun setBackgroudSong(songId: Int){
         mediaPlayer = MediaPlayer.create(application, songId)
     }

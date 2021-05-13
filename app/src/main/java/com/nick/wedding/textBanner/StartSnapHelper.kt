@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.rxjava3.annotations.NonNull
 
 /**
- * 控制自動對齊的模式 (對齊 Top, 系統 default middle)
+ * 控制自動對齊的模式 (對齊 Top/Start, 系統 default middle)
  * StartSnapHelper().attachToRecyclerView(rvAutoBannerVec: View)
  * */
 class StartSnapHelper : LinearSnapHelper() {
