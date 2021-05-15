@@ -4,7 +4,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.graphics.Rect
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -50,10 +49,14 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
     lateinit var popupWindowExchangeBinding: LayoutPopupwindowExchangeCheckBinding
     lateinit var popupWindowExchange: PopupWindow
 
+    /** 兌換區 Adapter */
+    lateinit var exchangeAdapter : ExchangeAdapter
+
     val duckAnimation = Observable.interval(5500, TimeUnit.MILLISECONDS)
     val animator = AnimatorSet()
 
     var popHeight = 0
+    var popOutHeight = 0
 
     var lHeight = 0
     var mVolume: Float = 0.7f
@@ -110,6 +113,8 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         binding.rvBanner.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         binding.rvBanner.start(0)
 
+        exchangeAdapter = ExchangeAdapter(androidViewModel)
+
         initPopupWindow()
         initClick()
         initObserver()
@@ -134,14 +139,13 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
 
         androidViewModel.exchangeList.observe(this, androidx.lifecycle.Observer {
 
-            val adapter = ExchangeAdapter(androidViewModel)
             popupWindowBinding.layoutExchange.rvExchange.let {
-                it.adapter = adapter
+                it.adapter = exchangeAdapter
                 it.layoutManager = LinearLayoutManager(this)
-                adapter.setListener(this)
+                exchangeAdapter.setListener(this)
             }
 
-            adapter.submit(it, androidViewModel.exchangePage)
+            exchangeAdapter.submit(it, androidViewModel.exchangePage)
         })
 
         androidViewModel.changeDate.observe(this, androidx.lifecycle.Observer {
@@ -291,6 +295,7 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
             }
         }
     }
+
     private fun initClick() {
 
         binding.ivSmallPo.setOnClickListener {
@@ -323,10 +328,12 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         }
 
         popupWindowBinding.btnExchange.setOnClickListener {
+            popOutHeight = popupWindowBinding.viewBackground.layoutParams.height
             popupWindowBinding.viewBackground.layoutParams.height += 200
             androidViewModel.getExchangePage()
             androidViewModel.exchangeClick.value = true
         }
+
         /** 兌換區列表 popupwindow */
         popupWindowBinding.layoutExchange.btnClose.setOnClickListener {
             popupWindowBinding.viewBackground.layoutParams.height -= 200
@@ -352,15 +359,15 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         }
 
         popupWindowBinding.layoutExchange.clTagButtonOne.setOnClickListener {
-            androidViewModel.getExchangePage(1)
+            androidViewModel.getExchangePage(popupWindowBinding.layoutExchange.tvFirstItem.text.toString())
         }
 
         popupWindowBinding.layoutExchange.clTagButtonTwo.setOnClickListener {
-            androidViewModel.getExchangePage(2)
+            androidViewModel.getExchangePage(popupWindowBinding.layoutExchange.tvSecondItem.text.toString())
         }
 
         popupWindowBinding.layoutExchange.clTagButtonThree.setOnClickListener {
-            androidViewModel.getExchangePage(3)
+            androidViewModel.getExchangePage(popupWindowBinding.layoutExchange.tvThirdItem.text.toString())
         }
 
         /** 兌換區確定 popupwindow */
@@ -376,8 +383,19 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
             androidViewModel.checkCookie()
         }
 
+        var settingStatus = false
+        popupWindowBinding.layoutExchange.ivSetting.setOnClickListener {
+            exchangeAdapter.submitSetting(!settingStatus)
+            settingStatus = settingStatus.not()
+            Timber.tag("hlcDebug").d(" ivSetting : $settingStatus")
+        }
+
         popupWindow.setOnDismissListener {
             smallPoAnimation(false)
+            settingStatus = false
+            popupWindowBinding.viewBackground.layoutParams.height = popOutHeight
+            androidViewModel.exchangeClick.value = false
+            exchangeAdapter.submitSetting(false)
         }
 
         popupWindowExchange.setOnDismissListener {
@@ -402,7 +420,25 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         super.onDestroy()
     }
 
-    override fun onFuctionListener(title: String, price: Int) {
+    override fun onFuctionListener(title: String, oldTitle: String, price: Int, settingStatus: Boolean, position: Int, page: Int) {
+
+        if (settingStatus) {
+            val category = when(page){
+                1->{
+                    popupWindowBinding.layoutExchange.tvFirstItem.text.toString()
+                }
+                2->{
+                    popupWindowBinding.layoutExchange.tvSecondItem.text.toString()
+                }
+                3->{
+                    popupWindowBinding.layoutExchange.tvThirdItem.text.toString()
+                }
+                else -> ""
+            }
+            androidViewModel.insertExchangeItem(category, position, title, oldTitle, price)
+            return
+        }
+
         androidViewModel.exchangeItemTitle = title
         androidViewModel.exchangePrice = price
 

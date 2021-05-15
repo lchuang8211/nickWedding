@@ -2,11 +2,14 @@ package com.nick.wedding.merryme
 
 import android.app.Application
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.nick.wedding.data.DateSign
+import com.nick.wedding.data.ExchangeItem
 import com.nick.wedding.data.ExchangeRecord
 import com.nick.wedding.database.WeddingOpenHelper
+import com.nick.wedding.surpport.ExchangeManager
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,9 +28,11 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val writeSql = sqlHelper.writableDatabase
     val dateTable = "dateTable"
     val exchangeRecordTable = "exchangeRecordTable"
+    val exchangeTable = "exchangeTable"
     val tableDate = "date"
     val sign = "sign"
     val seq = "seq"
+    val category = "category"
     val calendarTime = Calendar.getInstance()
 
     var cDay: Int = 1
@@ -48,10 +53,11 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
         Timber.tag("hlcDebug").d(" today: $today")
         selectSign()
         selectDate()
+        initExchangeList()
     }
 
-    val _exchangeList = mutableListOf<String>()
-    val exchangeList = MutableLiveData<List<String>>(_exchangeList)
+    val _exchangeList = mutableListOf<ExchangeItem>()
+    val exchangeList = MutableLiveData<List<ExchangeItem>>(_exchangeList)
     var exchangePage = 1
 
     var exchangeItemTitle = ""
@@ -61,45 +67,47 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val _exchangeRecordList = mutableListOf<ExchangeRecord>()
     val exchangeRecordList = MutableLiveData<List<ExchangeRecord>>(_exchangeRecordList)
 
-    fun getExchangePage(page:Int = 1){
-        _exchangeList.clear()
-        this.exchangePage = page
-
-        // search db
-
-        // insert db
-
-        when(page){
-            1 -> {
-                _exchangeList.add("item_1")
-                _exchangeList.add("item_2")
-                _exchangeList.add("item_3")
-                _exchangeList.add("item_4")
-                _exchangeList.add("item_5")
-                _exchangeList.add("item_6")
-                _exchangeList.add("item_7")
-            }
-            2 -> {
-                _exchangeList.add("item_1")
-                _exchangeList.add("item_2")
-                _exchangeList.add("item_3")
-                _exchangeList.add("item_4")
-                _exchangeList.add("item_5")
-                _exchangeList.add("item_6")
-                _exchangeList.add("item_7")
-            }
-            3 -> {
-                _exchangeList.add("item_1")
-                _exchangeList.add("item_2")
-                _exchangeList.add("item_3")
-                _exchangeList.add("item_4")
-                _exchangeList.add("item_5")
-                _exchangeList.add("item_6")
+    fun initExchangeList(){
+        selectSql.rawQuery("select 1 from $exchangeTable",null)?.let {
+            /** 預設 3區，各10項 */
+            if(it.count > 0 && it.count == 30)
+                return
+            else{
+                val category = arrayOf<String>("伙食區","生活區","羞羞區")
+                for (item in category.indices) {
+                    val mType = category[item]
+                    for (seq in 1..10) {
+                        val pair = ExchangeManager.getExchangeDefaultList("item_$seq", item+1)?:Pair("",0)
+                        val value = ContentValues()
+                        value.put("category", mType)
+                        value.put("seq", seq)
+                        value.put("title", pair.first)
+                        value.put("price", pair.second)
+                        value.put("visibility", !pair.first.equals("") && !pair.first.equals("--"))
+                        writeSql.insertOrThrow(exchangeTable, null, value)
+                    }
+                }
             }
         }
 
-        exchangeList.value = _exchangeList
+    }
 
+    fun getExchangePage(mType:String = "伙食區"){
+        _exchangeList.clear()
+        selectSql.rawQuery("select * from $exchangeTable where $category = '$mType' order by $seq asc",null)?.let {
+            it.moveToFirst()
+            for (i in 0 .. (it.count-1)){
+                _exchangeList.add(ExchangeItem(
+                    category = it.getString(it.getColumnIndex("category")),
+                    seq = it.getInt(it.getColumnIndex("seq")),
+                    title = it.getString(it.getColumnIndex("title")),
+                    price = it.getInt(it.getColumnIndex("price")),
+                    visibility = it.getInt(it.getColumnIndex("visibility")) == 1
+                ))
+                it.moveToNext()
+            }
+        }
+        exchangeList.value = _exchangeList
     }
 
     /** 取得當月天數(有算閏年) */
@@ -184,8 +192,6 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         Timber.tag("hlcDebug").d("initDateList : $initDateList")
-//        mDate.value = initDateList
-//        changeDate.value = true
 
         return initDateList
     }
@@ -275,6 +281,29 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 exchangeRecordList.value = _exchangeRecordList
             }
         }
+    }
+
+    /**
+     * @param Int 種類
+     * @param Int 第幾項
+     * @param String 項目名稱
+     * @param Int 項目價碼
+     * */
+    fun insertExchangeItem(category:String, seq: Int, title: String, oldTitle: String, price: Int){
+
+        val value = ContentValues()
+        value.put("category", category)
+        value.put("title", title)
+        value.put("price", price)
+        value.put("seq", seq)
+        value.put("visibility", 1)
+
+        selectSql.rawQuery("select 1 from $exchangeTable where category = '$category' and seq ='$seq' ", null)?.let {
+            if(it.count > 0) {
+                writeSql.update(exchangeTable,value,"category = ? and seq = ?", arrayOf(category,"$seq"))
+            }
+        }
+
     }
 
 }

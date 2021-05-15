@@ -5,5 +5,5 @@ data class ExchangeItem (
     var title :String = "",
     var price: Int = 0,
     var seq: Int = 0,
-    var visibility: Int = 1
+    var visibility: Boolean = false
 )

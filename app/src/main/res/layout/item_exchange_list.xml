@@ -3,47 +3,115 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        android:id="@+id/ll_item"
+        android:id="@+id/llAll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvTitle"
+        <LinearLayout
+            android:id="@+id/ll_item"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_weight="2"
-            android:gravity="center_vertical"
-            android:paddingStart="5sp"
-            android:text="546321"
-            android:textColor="#36729d"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-            android:textSize="14dp" />
+            <ImageView
+                android:id="@+id/ivNode"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/icon_node" />
 
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:padding="5dp"
-            android:src="@drawable/icon_popo_coockie" />
+            <EditText
+                android:id="@+id/etTitle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="2"
+                android:hint="輸入項目名稱"
+                android:paddingStart="5sp"
+                android:textColor="#36729d"
+                android:textSize="14dp"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvPrice"
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="2"
+                android:gravity="center_vertical"
+                android:paddingStart="5sp"
+                android:text="546321"
+                android:textColor="#36729d"
+                android:textSize="14dp"
+                android:visibility="visible" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="5dp"
+                android:src="@drawable/icon_popo_coockie" />
+
+            <EditText
+                android:id="@+id/etPrice"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="4"
+                android:gravity="center_vertical|end"
+                android:inputType="number"
+                android:paddingEnd="5dp"
+                android:textColor="#36729d"
+                android:textSize="14dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="4"
+                android:gravity="center_vertical|end"
+                android:paddingEnd="5dp"
+                android:text="546321"
+                android:textColor="#36729d"
+                android:textSize="14dp" />
+            <!--        8696A7-->
+            <!--        9933CC-->
+            <!--        @color/cornflower_blue-->
+            <!--        android:shadowColor="@color/black"-->
+            <!--        android:shadowRadius="1.0"-->
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llSetting"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_weight="6"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center_vertical|end"
-            android:paddingEnd="5dp"
-            android:text="546321"
-            android:textColor="#36729d"
+            android:visibility="gone">
 
-            android:textSize="14dp" />
-<!--        8696A7-->
-<!--        9933CC-->
-<!--        @color/cornflower_blue-->
-<!--        android:shadowColor="@color/black"-->
-<!--        android:shadowRadius="1.0"-->
+            <TextView
+                android:id="@+id/tvCancel"
+                android:layout_width="60dp"
+                android:layout_height="25dp"
+                android:background="@color/red"
+                android:text="取消"
+                android:gravity="center"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center_vertical|end"/>
+
+            <TextView
+                android:id="@+id/tvConfirm"
+                android:layout_width="60dp"
+                android:layout_height="25dp"
+                android:background="@color/red"
+                android:text="確定"
+                android:gravity="center"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center_vertical|end"/>
+
+        </LinearLayout>
+
     </LinearLayout>
-
 </layout>
