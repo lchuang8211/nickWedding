@@ -2,7 +2,7 @@ package com.nick.wedding.merryme
 
 import android.app.Application
 import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.nick.wedding.data.DateSign
@@ -23,6 +23,8 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val signYet = MutableLiveData<Int>(0)
     val exchangeClick = MutableLiveData<Boolean>(false)
     val initDateList = mutableListOf<DateSign>()
+
+    /** SQLite DataBase Config */
     val sqlHelper = WeddingOpenHelper(application)
     val selectSql = sqlHelper.readableDatabase
     val writeSql = sqlHelper.writableDatabase
@@ -33,8 +35,11 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     val sign = "sign"
     val seq = "seq"
     val category = "category"
-    val calendarTime = Calendar.getInstance()
+    /** SQLite DataBase Config */
 
+    val pref = application.getSharedPreferences("Cookie", Context.MODE_PRIVATE)
+
+    val calendarTime = Calendar.getInstance()
     var cDay: Int = 1
     var cYear: Int = 2021
     var cMonth: Int = 1
@@ -50,10 +55,10 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
         cWMonth = calendarTime.get(Calendar.WEEK_OF_MONTH)
         cDWeek = calendarTime.get(Calendar.DAY_OF_WEEK)
         today = dateFormat.format(calendarTime.time)
-        Timber.tag("hlcDebug").d(" today: $today")
+        initTotalCookie()
+        initExchangeList()
         selectSign()
         selectDate()
-        initExchangeList()
     }
 
     val _exchangeList = mutableListOf<ExchangeItem>()
@@ -66,6 +71,21 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
 
     val _exchangeRecordList = mutableListOf<ExchangeRecord>()
     val exchangeRecordList = MutableLiveData<List<ExchangeRecord>>(_exchangeRecordList)
+
+    val TotalCookieKey = "TotalCookie"
+
+    /** 曾經累計的 Cookie 數量 */
+    var initCookie :Int = 0
+
+    /** 第一次使用時，檢查用，首儲200 */
+    private fun initTotalCookie() {
+        initCookie = pref.getInt(TotalCookieKey, -1)
+        if (initCookie == -1) {
+            initCookie = 200
+            pref.edit().putInt(TotalCookieKey, initCookie).commit()
+        }
+        Timber.tag("hlcDebug").d(" initCookie: $initCookie")
+    }
 
     fun initExchangeList(){
         selectSql.rawQuery("select 1 from $exchangeTable",null)?.let {
@@ -215,6 +235,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 getHoldMonth(cYear, cMonth)
                 selectSign()
                 selectDate()
+                pref.edit().putInt(TotalCookieKey, totalCookie).commit()
                 changeDate.value = true
                 signYet.value = 1
             } else
@@ -225,8 +246,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
 
     fun selectSign(){
         selectSql.rawQuery("select $sign from $dateTable where $sign = 1 ", null)?.let {
-            totalCookie = it.count
-            totalCookie = 200
+            totalCookie = initCookie + it.count
         }
     }
 

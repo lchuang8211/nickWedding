@@ -181,7 +181,7 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         })
 
         androidViewModel.signYet.observe(this, androidx.lifecycle.Observer {
-            if (it>0)
+            if (it > 0)
                 Toast.makeText(this, ":+:簽簽簽:+:", Toast.LENGTH_SHORT).show()
             else if (it == -1)
                 Toast.makeText(this, "~~ 簽過囉 ~~", Toast.LENGTH_SHORT).show()
@@ -393,7 +393,7 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
         popupWindow.setOnDismissListener {
             smallPoAnimation(false)
             settingStatus = false
-            popupWindowBinding.viewBackground.layoutParams.height = popOutHeight
+            if (popOutHeight > 0) popupWindowBinding.viewBackground.layoutParams.height = popOutHeight
             androidViewModel.exchangeClick.value = false
             exchangeAdapter.submitSetting(false)
         }
