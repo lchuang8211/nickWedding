@@ -108,6 +108,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                     }
                 }
             }
+            it.close()
         }
 
     }
@@ -126,6 +127,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 ))
                 it.moveToNext()
             }
+            it.close()
         }
         exchangeList.value = _exchangeList
     }
@@ -210,6 +212,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 )
                 nullWeek += 1
             }
+            cursor.close()
         }
         Timber.tag("hlcDebug").d("initDateList : $initDateList")
 
@@ -218,14 +221,10 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
 
     /** 今日簽到 */
     fun signToday() {
-
         /**
          * 1. 搜尋 DB
          * 2. 插入 DB
          * */
-
-        //SELECT * FROM dateTable
-
         selectSql.rawQuery("select sign from $dateTable where $tableDate =?", arrayOf("$today"))?.let {
             if(it.count == 0) {
                 val value = ContentValues()
@@ -240,13 +239,14 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 signYet.value = 1
             } else
                 signYet.value = -1
+            it.close()
         }
-
     }
 
     fun selectSign(){
         selectSql.rawQuery("select $sign from $dateTable where $sign = 1 ", null)?.let {
             totalCookie = initCookie + it.count
+            it.close()
         }
     }
 
@@ -254,6 +254,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
         var tempCookie = 0
         selectSql.rawQuery("select * from dateTable where date like '$year-${month.toString().padStart(2, '0')}%' and sign != 0 ", null)?.let {
             tempCookie = it.count
+            it.close()
         }
         return tempCookie
     }
@@ -261,6 +262,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
     fun selectDate(){
         selectSql.rawQuery("select $tableDate from $dateTable", null)?.let {
             totalDate = it.count
+            it.close()
         }
     }
 
@@ -278,7 +280,6 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
             exchangeSuccess.value = false
         }
         changeDate.value = true
-
     }
 
     fun getExchangeRecord(){
@@ -300,6 +301,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 Timber.tag("hlcDebug").d("_exchangeRecordList : $_exchangeRecordList")
                 exchangeRecordList.value = _exchangeRecordList
             }
+            it.close()
         }
     }
 
@@ -322,6 +324,7 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
             if(it.count > 0) {
                 writeSql.update(exchangeTable,value,"category = ? and seq = ?", arrayOf(category,"$seq"))
             }
+            it.close()
         }
 
     }
