@@ -416,9 +416,6 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
 //            })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
     override fun onFuctionListener(title: String, oldTitle: String, price: Int, settingStatus: Boolean, position: Int, page: Int) {
 

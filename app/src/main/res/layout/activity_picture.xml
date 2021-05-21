@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -15,13 +15,36 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPicture"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:visibility="gone"/>
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/rvPicture"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:visibility="gone"/>-->
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/ivMouse"
+            android:layout_width="82dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="5dp"
+            android:paddingTop="15dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/mouse"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivGanbate"
+            android:layout_width="82dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/ganbate"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

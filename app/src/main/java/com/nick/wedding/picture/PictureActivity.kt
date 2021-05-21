@@ -1,6 +1,9 @@
 package com.nick.wedding.picture
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.view.animation.LinearInterpolator
 import androidx.databinding.DataBindingComponent
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -17,7 +20,12 @@ import com.nick.wedding.databinding.ActivityPictureBinding
 import com.nick.wedding.picture.adapter.AutoPicture
 import com.nick.wedding.picture.adapter.PictureAdapter
 import com.nick.wedding.surpport.WuBaiMediaPlayer
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class PictureActivity : BaseActivity() {
 
@@ -28,6 +36,12 @@ class PictureActivity : BaseActivity() {
     lateinit var androidViewModel: PictureViewModel
 
     val picList = mutableListOf<Int>()
+
+    val mouseAnimation = Observable.interval(3050, TimeUnit.MILLISECONDS)
+    val ganbateAnimation = Observable.interval(3550, TimeUnit.MILLISECONDS)
+
+    val mouseAnimator = AnimatorSet()
+    val ganbateAnimator = AnimatorSet()
 
     init {
         WuBaiMediaPlayer.startMediaPlayer()
@@ -44,6 +58,18 @@ class PictureActivity : BaseActivity() {
 
         initData()
         initRecyclerView()
+        initObserver()
+    }
+
+    private fun initObserver() {
+        binding.ivMouse.viewTreeObserver.addOnGlobalLayoutListener {
+            setMouseAnim()
+            mouseAnimation()
+        }
+        binding.ivGanbate.viewTreeObserver.addOnGlobalLayoutListener {
+            setGanbateAnim()
+            ganbateAnimation()
+        }
     }
 
     private fun initData() {
@@ -84,10 +110,10 @@ class PictureActivity : BaseActivity() {
     }
 
     private fun initRecyclerView() {
-        val adapter = PictureAdapter(androidViewModel)
-        binding.rvPicture.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.rvPicture.adapter = adapter
-        adapter.submit(picList)
+//        val adapter = PictureAdapter(androidViewModel)
+//        binding.rvPicture.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+//        binding.rvPicture.adapter = adapter
+//        adapter.submit(picList)
 
         binding.autoPicture.adapter = AutoPicture().apply {
             this.submit(picList)
@@ -96,16 +122,107 @@ class PictureActivity : BaseActivity() {
         StartSnapHelper().attachToRecyclerView(binding.autoPicture)
         binding.autoPicture.scrollToPosition(3000*picList.size)
         binding.autoPicture.start()
+
+    }
+
+
+    fun randomTranslation(): FloatArray {
+        val num = (6..9).random()+1
+        val float = FloatArray(num)
+        float.set(0, 0f)
+        for (i in 1..num-2 ) {
+            if (i%2==1)
+                float.set(i, Random().nextFloat() * 150 *-1)
+            else
+                float.set(i, 0f)
+        }
+        float.set(num-1, 0f)
+        return float
+    }
+
+    var ganbateXList : FloatArray = randomTranslation()
+    var ganbateYList : FloatArray = randomTranslation()
+    var mouseXList : FloatArray = randomTranslation()
+    var mouseYList : FloatArray = randomTranslation()
+
+    private fun mouseAnimation(){
+        mouseAnimation
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                mouseXList = randomTranslation()
+                mouseYList = randomTranslation()
+                mouseAnimator.start()
+            },{
+
+            })
+    }
+
+    private fun ganbateAnimation(){
+        ganbateAnimation
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                ganbateXList = randomTranslation()
+                ganbateYList = randomTranslation()
+                ganbateAnimator.start()
+            },{
+
+            })
+    }
+
+    fun setMouseAnim() {
+        val mouseY = ObjectAnimator.ofFloat(
+            binding.ivMouse,
+            "translationY",
+            *mouseYList
+        )
+
+        val mouseX = ObjectAnimator.ofFloat(
+            binding.ivMouse,
+            "translationX",
+            *mouseXList
+        )
+
+        mouseAnimator.play(mouseY)
+        mouseAnimator.duration = 2500
+        mouseAnimator.interpolator = LinearInterpolator()
+    }
+
+    fun setGanbateAnim(){
+        val ganbateY = ObjectAnimator.ofFloat(
+            binding.ivGanbate,
+            "translationY",
+            *ganbateYList
+        )
+
+        val ganbateX = ObjectAnimator.ofFloat(
+            binding.ivGanbate,
+            "translationX",
+            *ganbateXList
+        )
+
+        ganbateAnimator.play(ganbateY)
+        ganbateAnimator.duration = 3000
+        ganbateAnimator.interpolator = LinearInterpolator()
     }
 
     override fun onPause() {
         WuBaiMediaPlayer.stopMediaPlayer()
         super.onPause()
+        mouseAnimator.start()
+        ganbateAnimator.start()
+        mouseAnimation?.unsubscribeOn(AndroidSchedulers.mainThread())
+        ganbateAnimation?.unsubscribeOn(AndroidSchedulers.mainThread())
     }
 
     override fun onResume() {
         super.onResume()
         WuBaiMediaPlayer.startMediaPlayer()
+        mouseAnimator.resume()
+        ganbateAnimator.resume()
+        mouseAnimation()
+        ganbateAnimation()
     }
 
 }
