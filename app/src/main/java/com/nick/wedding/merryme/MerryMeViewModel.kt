@@ -212,10 +212,9 @@ class MerryMeViewModel(application: Application) : AndroidViewModel(application)
                 )
                 nullWeek += 1
             }
-            cursor.close()
         }
         Timber.tag("hlcDebug").d("initDateList : $initDateList")
-
+        cursor.close()
         return initDateList
     }
 
