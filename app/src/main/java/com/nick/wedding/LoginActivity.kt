@@ -1,17 +1,22 @@
 package com.nick.wedding
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.nick.wedding.base.BaseActivity
 import com.nick.wedding.databinding.ActivityLoginBinding
 import com.nick.wedding.merryme.MerryMeActivity
+import com.nick.wedding.surpport.ToastUntil
 import timber.log.Timber
 
 class LoginActivity : BaseActivity() {
@@ -23,6 +28,10 @@ class LoginActivity : BaseActivity() {
     lateinit var biometricManager : BiometricManager
     lateinit var biometricPrompt : BiometricPrompt.PromptInfo
 
+    val myPWD = "1226"
+    val LoginFingerKey = "LoginFingerKey"
+    lateinit var sharedPreferences : SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Thread.sleep(2000)
         super.onCreate(savedInstanceState)
@@ -32,7 +41,8 @@ class LoginActivity : BaseActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         binding.lifecycleOwner = this
 
-
+        sharedPreferences = this.getSharedPreferences("Login", Context.MODE_PRIVATE)
+        viewModel.finger.value = sharedPreferences.getBoolean(LoginFingerKey,false)
 
         initComponent()
         initObserver()
@@ -49,15 +59,37 @@ class LoginActivity : BaseActivity() {
         when (biometricManager.canAuthenticate()) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
                 Timber.tag("hlcDebug").d(" BIOMETRIC_SUCCESS: 可以使用")
-                useBiometricPrompt()
+                binding.llFinger.visibility = View.VISIBLE
+                if (sharedPreferences.getBoolean(LoginFingerKey,false)) {
+                    useBiometricPrompt()
+                    binding.ivFinger.setImageResource(R.drawable.icon_tick)
+                } else {
+                    binding.ivFinger.setImageResource(R.drawable.icon_cross)
+                }
             }
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                 Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_NO_HARDWARE: 硬體不支持此功能")
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
+                binding.llFinger.visibility = View.GONE
+            }
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
                 Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_HW_UNAVAILABLE: 目前無法使用")
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+                binding.llFinger.visibility = View.GONE
+            }
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                binding.llFinger.visibility = View.GONE
                 Timber.tag("hlcDebug").d(" BIOMETRIC_ERROR_NONE_ENROLLED: 沒有設置")
+            }
         }
+
+        viewModel.finger.observe(this, Observer { finger ->
+            if (finger) {
+                binding.ivFinger.setImageResource(R.drawable.icon_tick)
+            } else {
+                binding.ivFinger.setImageResource(R.drawable.icon_cross)
+            }
+        })
+
+
 
 
     }
@@ -77,11 +109,22 @@ class LoginActivity : BaseActivity() {
         }
 
         binding.ivHeart.setOnClickListener {
-                startActivity(Intent(this, MerryMeActivity::class.java))
-                return@setOnClickListener
+            val pwd = binding.evPassword.text.toString()
+            if (pwd.equals("")) {
+                ToastUntil("我們的愛情密碼，難道是一場空嗎？", Toast.LENGTH_LONG)
+            } else if (!pwd.equals(myPWD)){
+                ToastUntil("我們的愛情密碼，注定在那特別的紀念日裡", Toast.LENGTH_LONG)
+            } else if (pwd.equals(myPWD)) {
+                gogogo()
+            }
         }
 
-
+        binding.llFinger.setOnClickListener {
+            if (viewModel.finger.value != null) {
+                viewModel.finger.value = viewModel.finger.value!!.not()
+                sharedPreferences.edit().putBoolean(LoginFingerKey, viewModel.finger.value!!).commit()
+            }
+        }
     }
 
     fun useBiometricPrompt(){

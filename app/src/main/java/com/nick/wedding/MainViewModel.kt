@@ -7,4 +7,6 @@ class MainViewModel : BaseViewModel() {
 
     val stringData = MutableLiveData<String>("LiveData")
 
+    val finger = MutableLiveData<Boolean>()
+
 }

@@ -42,5 +42,34 @@
             app:layout_constraintEnd_toEndOf="@+id/evPassword"
             app:layout_constraintTop_toBottomOf="@+id/evPassword"/>
 
+        <LinearLayout
+            android:id="@+id/llFinger"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/ivFinger"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/icon_cross"/>
+
+            <TextView
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:textSize="14dp"
+                android:text="指紋辨識"/>
+        </LinearLayout>
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
