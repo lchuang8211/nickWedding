@@ -96,18 +96,25 @@ class MerryMeActivity : BaseActivity() , ExchangeAdapter.ExchangeListener{
             this.submit(
                 arrayListOf(
                     "", "", "", "", "", "", "", "",
-                    "克堂梨花春光輝",
-                    "風吹落春草色已",
-                    "邪拭淚落葉紛紛",
-                    "我為此日高風起",
-                    "愛君恩深做女伴",
-                    "妳騷人不出塵土",
-                    "嫁七十四海風霜",
-                    "給殘燈前事無力",
-                    "我今古今日蕭蕭",
-                    "吧笙歌吹落處處"
+                    "我是OPEN將",
+                    "快樂的一天",
+                    "跟你一起OPEN",
+                    "我就是卡哇伊的OPEN將",
+                    "啦啦啦 OH~ OPEN",
+                    "",
+                    "每天都跟你在一起呦"
                 )
             )
+//            "克堂梨花春光輝",
+//            "風吹落春草色已",
+//            "邪拭淚落葉紛紛",
+//            "我為此日高風起",
+//            "愛君恩深做女伴",
+//            "妳騷人不出塵土",
+//            "嫁七十四海風霜",
+//            "給殘燈前事無力",
+//            "我今古今日蕭蕭",
+//            "吧笙歌吹落處處"
         }
 
         binding.rvBanner.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
