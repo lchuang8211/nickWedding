@@ -37,9 +37,11 @@ class PictureActivity : BaseActivity() {
 
     val picList = mutableListOf<Int>()
 
+    val dogAnimation = Observable.interval(3550, TimeUnit.MILLISECONDS)
     val mouseAnimation = Observable.interval(3050, TimeUnit.MILLISECONDS)
     val ganbateAnimation = Observable.interval(3550, TimeUnit.MILLISECONDS)
 
+    val dogAnimator = AnimatorSet()
     val mouseAnimator = AnimatorSet()
     val ganbateAnimator = AnimatorSet()
 
@@ -70,15 +72,19 @@ class PictureActivity : BaseActivity() {
             setGanbateAnim()
             ganbateAnimation()
         }
+        binding.ivDog.viewTreeObserver.addOnGlobalLayoutListener {
+            setDogAnim()
+            dogAnimation()
+        }
     }
 
     private fun initData() {
 
         //TODO add picture from SD card
 
-        picList.add(R.drawable.picbanner1)
-        picList.add(R.drawable.picbanner2)
-        picList.add(R.drawable.picbanner3)
+        picList.add(R.drawable.picbanner13)
+        picList.add(R.drawable.picbanner14)
+        picList.add(R.drawable.picbanner15)
         picList.add(R.drawable.picbanner4)
         picList.add(R.drawable.picbanner5)
         picList.add(R.drawable.picbanner6)
@@ -140,10 +146,25 @@ class PictureActivity : BaseActivity() {
         return float
     }
 
+    var dogXList : FloatArray = randomTranslation()
+    var dogYList : FloatArray = randomTranslation()
     var ganbateXList : FloatArray = randomTranslation()
     var ganbateYList : FloatArray = randomTranslation()
     var mouseXList : FloatArray = randomTranslation()
     var mouseYList : FloatArray = randomTranslation()
+
+    private fun dogAnimation(){
+        mouseAnimation
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                dogXList = randomTranslation()
+                dogYList = randomTranslation()
+                dogAnimator.start()
+            },{
+
+            })
+    }
 
     private fun mouseAnimation(){
         mouseAnimation
@@ -169,6 +190,24 @@ class PictureActivity : BaseActivity() {
             },{
 
             })
+    }
+
+    fun setDogAnim() {
+        val dogY = ObjectAnimator.ofFloat(
+            binding.ivDog,
+            "translationY",
+            *dogYList
+        )
+
+        val dogX = ObjectAnimator.ofFloat(
+            binding.ivDog,
+            "translationX",
+            *dogXList
+        )
+
+        dogAnimator.play(dogX)
+        dogAnimator.duration = 3000
+        dogAnimator.interpolator = LinearInterpolator()
     }
 
     fun setMouseAnim() {
@@ -212,6 +251,8 @@ class PictureActivity : BaseActivity() {
         super.onPause()
         mouseAnimator.start()
         ganbateAnimator.start()
+        dogAnimator.start()
+        dogAnimation?.unsubscribeOn(AndroidSchedulers.mainThread())
         mouseAnimation?.unsubscribeOn(AndroidSchedulers.mainThread())
         ganbateAnimation?.unsubscribeOn(AndroidSchedulers.mainThread())
     }
@@ -221,6 +262,8 @@ class PictureActivity : BaseActivity() {
         WuBaiMediaPlayer.startMediaPlayer()
         mouseAnimator.resume()
         ganbateAnimator.resume()
+        dogAnimator.resume()
+        dogAnimation()
         mouseAnimation()
         ganbateAnimation()
     }
